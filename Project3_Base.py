@@ -104,17 +104,16 @@ def main(argv):
                             family[fam].chil.add(args)
 
                 elif level == "2" and tag == "DATE":
-                    if plevel == "1" and ptag in ["BIRT", "DEAT", "MARR", "DIV"]:
-                        if flag == 1:
-                            if ptag == "BIRT":
-                                individuals[indi].birt = args
-                            elif ptag == "DEAT":
-                                individuals[indi].deat = args
-                        elif flag == 2:
-                            if ptag == "MARR":
-                                family[fam].marr = args
-                            elif ptag == "DIV":
-                                family[fam].div = args
+                    if flag == 1:
+                        if ptag == "BIRT":
+                            individuals[indi].birt = args
+                        elif ptag == "DEAT":
+                            individuals[indi].deat = args
+                    elif flag == 2:
+                        if ptag == "MARR":
+                            family[fam].marr = args
+                        elif ptag == "DIV":
+                            family[fam].div = args
         plevel = level
         ptag = tag
 
