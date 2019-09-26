@@ -1,11 +1,9 @@
-#Thomas Chu
-#18 September 2019
+#Thomas Chu  18 September 2019
+#Jichen Dai  26 Sept 2019
 #I pledge my honor that I have abided by the Stevens Honor System
-
 import sys
-
-
-
+import prettytable as pt
+import datetime
 #create dictionary for keyword lookup
 keywords = {
     "0" : {
@@ -35,57 +33,152 @@ keywords = {
     }
 }
 
+individuals = dict()
+family = dict()
+
+indi_table = pt.PrettyTable()
+indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
+fam_table = pt.PrettyTable()
+fam_table.field_names = ["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name", "Children"]
+
 
 
 def main(argv):
     #Check for correct number of arguments
     if len(argv) != 1:
         print("Correct usage is: Chu_Project2.py <GEDCOM filename>")
-
-    #Open file
     filename = argv[0]
-    with open(filename,'r') as f:
-        #Read file line by line
-        lines = f.readlines()
+    lines = open(filename, 'r')
 
-        #For each line:
-        for x in lines:
-            #Print input line
-            x=x.replace('\n','')
-            print("--> ",x,"\n<-- ", sep='', end='')
-            
-            #Extract information from inputline: <level> <tag> <args>
-            level = x[0]
-            strip1 = x[2:]
-            split = strip1.split(' ',1)
-            tag = split[0]
-            if len(split) > 1:
-                args = split[1]
-            else:
-                args = ''
+    indi = ""
+    fam = ""
+    plevel = ""   # DATE will use the previous line.
+    ptag = ""
+    flag = 0
+    ################################# read line by line ########################################################3
+    for x in lines:
+        #Extract information from inputline: <level> <tag> <args>
+        x = x.strip('\n')
+        level = x[0]
+        strip1 = x[2:]
+        split = strip1.split(' ',1)
+        tag = split[0]
+        if len(split) > 1:
+           args = split[1]
+        else:
+            args = ''
+        if level == "0" and args in ["INDI", "FAM"]:
+            tag, args = args, tag
+
+        #levle == "0" means beginning of a individual or family
+        if level == "0":
+            if tag  == "INDI":
+                flag = 1
+                indi = args.replace("@", "")
+                individuals[indi] = Individual()
+            if tag == "FAM":
+                flag = 2
+                fam = args.replace("@", "")
+                family[fam] = Family()
+
+        elif flag in [1, 2]:
+            if args != "":
+             # if args == "", it is BIRT or DEAT or MARR or DIV. We will deal with it in the next line.
+                if level == "1":
+                    args = args.replace("@", "")
+                    if flag == 1:
+                        if tag == "NAME":
+                            individuals[indi].name = args
+                        elif tag == "SEX":
+                            individuals[indi].sex = args
+                        elif tag == "FAMC":
+                            individuals[indi].famc = args
+                        elif tag == "FAMS":
+                            individuals[indi].fams.add(args)
+                    elif flag == 2:
+                        if tag == "HUSB":
+                            family[fam].husb = args
+                        elif tag == "WIFE":
+                            family[fam].wife = args
+                        elif tag == "CHIL":
+                            family[fam].chil.add(args)
+
+                elif level == "2" and tag == "DATE":
+                    if plevel == "1" and ptag in ["BIRT", "DEAT", "MARR", "DIV"]:
+                        if flag == 1:
+                            if ptag == "BIRT":
+                                individuals[indi].birt = args
+                            elif ptag == "DEAT":
+                                individuals[indi].deat = args
+                        elif flag == 2:
+                            if ptag == "MARR":
+                                family[fam].marr = args
+                            elif ptag == "DIV":
+                                family[fam].div = args
+        plevel = level
+        ptag = tag
+
+    ####################################### calculate age ##############################################################
+    for indi in individuals.values():
+         indi.calcuAge()
+    ######################################## print tables ###############################################################
+    print("Individual Table")
+    for ID, indi in individuals.items():
+        indi_table.add_row([ID, indi.name, indi.sex, indi.birt, indi.age, indi.alive, indi.deat, indi.famc, indi.fams])
+    print(indi_table)
+    print("Family Table")
+    for ID, fam in family.items():
+        if fam.husb != None and fam.wife != None:
+            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, individuals[fam.husb].name, fam.wife, individuals[fam.wife].name, fam.chil])
+        elif fam.husb == None and fam.wife == None:
+            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, None, fam.chil])
+        elif fam.husb == None and fam.wife != None:
+            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, individuals[fam.wife].name, fam.chil])
+        elif fam.husb != None and fam.wife == None:
+            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, individuals[fam.husb].name, fam.wife, None, fam.chil])
+    print(fam_table)
 
 
-            #If level is 1 or 2, line is in form <level> <tag> <args>, so lookup is simple
-            if level == "1" or level == "2":
-                #Find the keyword in the dictionary. Valid will be "Y" if there, "N" if not.
-                valid = keywords[level].get(tag, "N")
 
-            #If level is 0, lookup is more complicated
-            else:
-                #Attempt to find the keyword.
-                valid = keywords[level].get(tag, "N")
-                
-                #If the keyword is not there, must check if the tag is actually in args
-                if valid == "N":
-                    valid = keywords[level].get(args, "N")
+############################################ define Individual and Family ################################################################
+class Family:
+    def __init__(self):
+        self.marr = None
+        self.div = None
+        self.husb = None
+        self.wife = None
+        self.chil = set()
 
-                    #If the tag is in args, must switch values of tag and args
-                    if valid == "Y":
-                        tag, args = args, tag
-            
-            
-            #Print the formatted information
-            print(level,tag,valid,args, sep="|")
+
+class Individual:
+    def __init__(self):
+        self.name = None
+        self.sex = None
+        self.birt = None
+        self.age = None
+        self.alive = True
+        self.deat = None
+        self.famc = None
+        self.fams = set()
+        self.by = None
+        self.dy = None
+
+    def calcuAge(self):
+        if self.deat == None:
+            self.alive = True
+        else:
+            self.alive = False
+
+        if self.alive:
+            self.by = self.birt.split(' ', 2)
+            self.age = 2019-int(self.by[2])
+        else:
+            self.by = self.birt.split(' ', 2)
+            self.dy = self.deat.split(' ', 2)
+            self.age = int(self.dy[2]) - int(self.by[2])
+
+
+
 
 
 
