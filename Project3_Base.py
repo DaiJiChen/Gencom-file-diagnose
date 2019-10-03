@@ -4,6 +4,7 @@
 import sys
 import prettytable as pt
 import datetime
+import os
 #create dictionary for keyword lookup
 keywords = {
     "0" : {
@@ -33,109 +34,113 @@ keywords = {
     }
 }
 
-individuals = dict()
-family = dict()
-
-indi_table = pt.PrettyTable()
-indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
-fam_table = pt.PrettyTable()
-fam_table.field_names = ["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name", "Children"]
 
 
+class Analyze_and_print:
+    def __init__(self):
+        print("Entered GEDCOM_analyse")
+        self.individuals = dict()
+        self.families = dict()
 
-def main(argv):
-    #Check for correct number of arguments
-    if len(argv) != 1:
-        print("Correct usage is: Chu_Project2.py <GEDCOM filename>")
-    filename = argv[0]
-    lines = open(filename, 'r')
+        self.indi_table = pt.PrettyTable()
+        self.indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
+        self.fam_table = pt.PrettyTable()
+        self.fam_table.field_names = ["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name",
+                             "Children"]
+        self.analyse()
+        self.print_table()
 
-    indi = ""
-    fam = ""
-    plevel = ""   # DATE will use the previous line.
-    ptag = ""
-    flag = 0
-    ################################# read line by line ########################################################3
-    for x in lines:
-        #Extract information from inputline: <level> <tag> <args>
-        x = x.strip('\n')
-        level = x[0]
-        strip1 = x[2:]
-        split = strip1.split(' ',1)
-        tag = split[0]
-        if len(split) > 1:
-           args = split[1]
-        else:
-            args = ''
-        if level == "0" and args in ["INDI", "FAM"]:
-            tag, args = args, tag
+    #analyse GEDCOM file line by line, and store data into two dictionarries.
+    def analyse(self):
+        lines = open("gedcomfile.ged", 'r')
+        indi = ""
+        fam = ""
+        plevel = ""  # DATE will use the previous line.
+        ptag = ""
+        flag = 0
+        for x in lines:
+            #Extract information from inputline: <level> <tag> <args>
+            x = x.strip('\n')
+            x = x.strip()
+            level = x[0]
+            strip1 = x[2:]
+            split = strip1.split(' ',1)
+            tag = split[0]
+            if len(split) > 1:
+                args = split[1]
+            else:
+                args = ''
+            if level == "0" and args in ["INDI", "FAM"]:
+                tag, args = args, tag
 
-        #levle == "0" means beginning of a individual or family
-        if level == "0":
-            if tag  == "INDI":
-                flag = 1
-                indi = args.replace("@", "")
-                individuals[indi] = Individual()
-            if tag == "FAM":
-                flag = 2
-                fam = args.replace("@", "")
-                family[fam] = Family()
+            #levle == "0" means beginning of a individual or family
+            if level == "0":
+                if tag  == "INDI":
+                    flag = 1
+                    indi = args.replace("@", "")
+                    self.individuals[indi] = Individual()
+                if tag == "FAM":
+                    flag = 2
+                    fam = args.replace("@", "")
+                    self.families[fam] = Family()
 
-        elif flag in [1, 2]:
-            if args != "":
-             # if args == "", it is BIRT or DEAT or MARR or DIV. We will deal with it in the next line.
-                if level == "1":
-                    args = args.replace("@", "")
-                    if flag == 1:
-                        if tag == "NAME":
-                            individuals[indi].name = args
-                        elif tag == "SEX":
-                            individuals[indi].sex = args
-                        elif tag == "FAMC":
-                            individuals[indi].famc = args
-                        elif tag == "FAMS":
-                            individuals[indi].fams.add(args)
-                    elif flag == 2:
-                        if tag == "HUSB":
-                            family[fam].husb = args
-                        elif tag == "WIFE":
-                            family[fam].wife = args
-                        elif tag == "CHIL":
-                            family[fam].chil.add(args)
+            elif flag in [1, 2]:
+                if args != "":
+                # if args == "", it is BIRT or DEAT or MARR or DIV. We will deal with it in the next line.
+                    if level == "1":
+                        args = args.replace("@", "")
+                        if flag == 1:
+                            if tag == "NAME":
+                                self.individuals[indi].name = args
+                            elif tag == "SEX":
+                                self.individuals[indi].sex = args
+                            elif tag == "FAMC":
+                                self.individuals[indi].famc = args
+                            elif tag == "FAMS":
+                                self.individuals[indi].fams.add(args)
+                        elif flag == 2:
+                            if tag == "HUSB":
+                                self.families[fam].husb = args
+                            elif tag == "WIFE":
+                                self.families[fam].wife = args
+                            elif tag == "CHIL":
+                                self.families[fam].chil.add(args)
 
-                elif level == "2" and tag == "DATE":
-                    if flag == 1:
-                        if ptag == "BIRT":
-                            individuals[indi].birt = args
-                        elif ptag == "DEAT":
-                            individuals[indi].deat = args
-                    elif flag == 2:
-                        if ptag == "MARR":
-                            family[fam].marr = args
-                        elif ptag == "DIV":
-                            family[fam].div = args
-        plevel = level
-        ptag = tag
+                    elif level == "2" and tag == "DATE":
+                        print(ptag)
+                        if flag == 1:
+                            if ptag == "BIRT":
+                                self.individuals[indi].birt = args
+                            elif ptag == "DEAT":
+                                self.individuals[indi].deat = args
+                        elif flag == 2:
+                            if ptag == "MARR":
+                                self.families[fam].marr = args
+                            elif ptag == "DIV":
+                                self.families[fam].div = args
+            plevel = level
+            ptag = tag
+        for indi in self.individuals.values():
+            indi.calcuAge()
 
-    ####################################### calculate age ##############################################################
-    for indi in individuals.values():
-         indi.calcuAge()
-    ######################################## print tables ###############################################################
-    print("Individual Table")
-    for ID, indi in individuals.items():
-        indi_table.add_row([ID, indi.name, indi.sex, indi.birt, indi.age, indi.alive, indi.deat, indi.famc, indi.fams])
-    print(indi_table)
-    print("Family Table")
-    for ID, fam in family.items():
-        if fam.husb != None and fam.wife != None:
-            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, individuals[fam.husb].name, fam.wife, individuals[fam.wife].name, fam.chil])
-        elif fam.husb == None and fam.wife == None:
-            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, None, fam.chil])
-        elif fam.husb == None and fam.wife != None:
-            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, individuals[fam.wife].name, fam.chil])
-        elif fam.husb != None and fam.wife == None:
-            fam_table.add_row([ID, fam.marr, fam.div, fam.husb, individuals[fam.husb].name, fam.wife, None, fam.chil])
-    print(fam_table)
+    #Put the data in two dictionaries into two prettytables, and print prettytables.
+    def print_table(self):
+        print("Individual Table")
+        for ID, indi in self.individuals.items():
+            self.indi_table.add_row([ID, indi.name, indi.sex, indi.birt, indi.age, indi.alive, indi.deat, indi.famc, indi.fams])
+        print(self.indi_table)
+
+        print("Family Table")
+        for ID, fam in self.families.items():
+            if fam.husb != None and fam.wife != None:
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, self.individuals[fam.wife].name, fam.chil])
+            elif fam.husb == None and fam.wife == None:
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, None, fam.chil])
+            elif fam.husb == None and fam.wife != None:
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, self.individuals[fam.wife].name, fam.chil])
+            elif fam.husb != None and fam.wife == None:
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, None, fam.chil])
+        print(self.fam_table)
 
 
 
@@ -159,28 +164,22 @@ class Individual:
         self.deat = None
         self.famc = None
         self.fams = set()
-        self.by = None
-        self.dy = None
 
     def calcuAge(self):
         if self.deat == None:
             self.alive = True
         else:
             self.alive = False
-
         if self.alive:
-            self.by = self.birt.split(' ', 2)
-            self.age = 2019-int(self.by[2])
+            self.age = datetime.datetime.now().year - int(self.birt.split(' ',2)[2])
         else:
-            self.by = self.birt.split(' ', 2)
-            self.dy = self.deat.split(' ', 2)
-            self.age = int(self.dy[2]) - int(self.by[2])
+            self.age = int(self.deat.split(' ',2)[2]) - int(self.birt.split(' ',2)[2])
 
 
 
-
-
-
+def main():
+    print("Entered main")
+    Analyze_and_print()
 
 if __name__ == "__main__" :
-    main(sys.argv[1:])
+    main()
