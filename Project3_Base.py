@@ -37,7 +37,7 @@ keywords = {
 
 
 class Analyze_and_print:
-    def __init__(self):
+    def __init__(self, filename):
         print("Entered GEDCOM_analyse")
         self.individuals = dict()
         self.families = dict()
@@ -47,12 +47,12 @@ class Analyze_and_print:
         self.fam_table = pt.PrettyTable()
         self.fam_table.field_names = ["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name",
                              "Children"]
-        self.analyse()
+        self.analyse(filename)
         self.print_table()
 
     #analyse GEDCOM file line by line, and store data into two dictionarries.
-    def analyse(self):
-        lines = open("gedcomfile.ged", 'r')
+    def analyse(self, filename):
+        lines = open(filename, 'r')
         indi = ""
         fam = ""
         plevel = ""  # DATE will use the previous line.
@@ -179,7 +179,7 @@ class Individual:
 
 def main():
     print("Entered main")
-    Analyze_and_print()
+    Analyze_and_print("gedcomfile.ged")
 
 if __name__ == "__main__" :
     main()
