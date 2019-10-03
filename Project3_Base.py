@@ -1,7 +1,6 @@
 #Thomas Chu  18 September 2019
 #Jichen Dai  26 Sept 2019
 #I pledge my honor that I have abided by the Stevens Honor System
-import sys
 import prettytable as pt
 import datetime
 import os
@@ -38,7 +37,6 @@ keywords = {
 
 class Analyze_and_print:
     def __init__(self, filename):
-        print("Entered GEDCOM_analyse")
         self.individuals = dict()
         self.families = dict()
 
@@ -107,7 +105,6 @@ class Analyze_and_print:
                                 self.families[fam].chil.add(args)
 
                     elif level == "2" and tag == "DATE":
-                        print(ptag)
                         if flag == 1:
                             if ptag == "BIRT":
                                 self.individuals[indi].birt = args
@@ -178,7 +175,6 @@ class Individual:
 
 
 def main():
-    print("Entered main")
     Analyze_and_print("gedcomfile.ged")
 
 if __name__ == "__main__" :
