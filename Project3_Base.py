@@ -4,38 +4,12 @@
 import prettytable as pt
 import datetime
 import os
-#create dictionary for keyword lookup
-keywords = {
-    "0" : {
-        "INDI" : "Y",
-        "FAM" : "Y",
-        "HEAD" : "Y",
-        "TRLR" : "Y",
-        "NOTE" : "Y"
-    },
-
-    "1" : {
-        "NAME" : "Y",
-        "SEX" : "Y",
-        "BIRT" : "Y",
-        "DEAT" : "Y",
-        "FAMC" : "Y",
-        "FAMS" : "Y",
-        "MARR" : "Y",
-        "HUSB" : "Y",
-        "WIFE" : "Y",
-        "CHIL" : "Y",
-        "DIV" : "Y"
-    },
+import validate
     
-    "2" : {
-        "DATE" : "Y"
-    }
-}
+    
 
 
-
-class Analyze_and_print:
+class Gedcom:
     def __init__(self, filename):
         self.individuals = dict()
         self.families = dict()
@@ -46,7 +20,6 @@ class Analyze_and_print:
         self.fam_table.field_names = ["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name",
                              "Children"]
         self.analyse(filename)
-        self.print_table()
 
     #analyse GEDCOM file line by line, and store data into two dictionarries.
     def analyse(self, filename):
@@ -174,8 +147,16 @@ class Individual:
 
 
 
-def main():
-    Analyze_and_print("gedcomfile.ged")
+def main(filename):
+    gc = Gedcom(filename)
+    validate(gc)
+    gc.print_table()
+    
 
 if __name__ == "__main__" :
-    main()
+    main(sys.argv[1:])
+    
+    
+    
+  
+    
