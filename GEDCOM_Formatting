@@ -1,0 +1,20 @@
+Theere should be at least 2 teast files per use case: 1 successful and 1 failure. 
+If there are any edge cases that need to be tested, there should be additional cases testing those.
+Indivduals and families should ONLY fail the use case you are testing
+
+
+
+Individual unit testing files should be named in the format <Use Case Number><letter>.gedcom
+where <Use Case Number> is the use case number and
+<letter> denotes which case, <a> for the successful case, <b> for the failure, and so on for edge cases
+
+
+Each case should start with a note that briefly descrives the file: success/failure/description of edge case
+Identifiers for Individuals/Families should be as follows
+<V/I><Use Case Number><Letter><Additional Number> where
+<V/I> indicates weather it is a valid or invalid entry
+<Use Case Number><Letter> are the same as in the file name
+<Additional Number> is an additional number used to differentiate between individuals/families
+
+This is to allow the contents of each unit test to be added to a master gedcom file that will be used for initial higher stage testing
+
