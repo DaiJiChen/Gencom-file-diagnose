@@ -2,11 +2,34 @@
 #Jichen Dai  26 Sept 2019
 #I pledge my honor that I have abided by the Stevens Honor System
 import prettytable as pt
-import datetime
+from datetime import date
 import os
 import validate
-    
-    
+
+def months = {
+    "JAN":1,
+    "FEB":2,
+    "MAR":3,
+    "APR":4,
+    "MAY":5,
+    "JUN":6,
+    "JUL":7,
+    "AUG":8,
+    "SEP":9,
+    "OCT":10,
+    "NOV":11,
+    "DEC":12
+}
+
+
+#converts a date in GEDCOM format to a date object
+def makeDate(GEDDate):
+    temp = GEDDate.split(' ')
+    return date(temp[2], months[temp[1]], temp[0])
+
+#calculates the number of years from date1 to date2 if date2 is supplied, years since date1 if not
+def calcAge(date1, date2=date.today):
+    return date2.year - date1.year - ((date2.month, date2.day) < (date1.month, date1.day))
 
 
 class Gedcom:
@@ -141,9 +164,9 @@ class Individual:
         else:
             self.alive = False
         if self.alive:
-            self.age = datetime.datetime.now().year - int(self.birt.split(' ',2)[2])
+            self.age = calcAge(makeDate(self.birt))
         else:
-            self.age = int(self.deat.split(' ',2)[2]) - int(self.birt.split(' ',2)[2])
+            self.age = calcAge(makeDate(self.birt),makeDate(self.deat))
 
 
 
