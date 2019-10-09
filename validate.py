@@ -1,6 +1,6 @@
 from datetime import date
 
-def months = {
+months = {
     "JAN":1,
     "FEB":2,
     "MAR":3,
