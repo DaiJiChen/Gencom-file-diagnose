@@ -45,8 +45,8 @@ class Gedcom:
         self.analyse(filename)
 
     #analyse GEDCOM file line by line, and store data into two dictionarries.
-    def analyse(self, filename):
-        lines = open(filename, 'r')
+    def analyse(self, prgmArgs):
+        lines = open(prgmArgs[0], 'r')
         indi = ""
         fam = ""
         plevel = ""  # DATE will use the previous line.
