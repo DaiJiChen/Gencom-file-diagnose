@@ -5,8 +5,9 @@ import prettytable as pt
 from datetime import date
 import os
 import validate
+import sys
 
-def months = {
+months = {
     "JAN":1,
     "FEB":2,
     "MAR":3,
