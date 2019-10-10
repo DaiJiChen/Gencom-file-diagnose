@@ -108,6 +108,27 @@ def BirtBeforeDeat(gc):
         return 1
 
 
+    
+    
+#US04
+#User Stroy 4
+def MarriageBeforeDivorce(gc):
+    success=-1
+    for id, fam in gc.families.items():
+        if (fam.div !=None):
+            if(CompareDate(makeDate(fam.arr),makeDate(fam.div))>0):
+                print(id+" family have marriage dates after divorce date")
+                success=0
+        else: 
+            print("There are no marriage dates after the divorce dates")        
+        
+        
+    if success == 0:
+        return 0
+    else:
+        return 1
+    
+    
 # US0506 Marriage Before Death AND Divorce Before Death
 # Compare date
 def CompareDate(date1, date2):
