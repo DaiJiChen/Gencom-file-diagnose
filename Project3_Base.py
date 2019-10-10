@@ -29,7 +29,7 @@ def makeDate(GEDDate):
     return date(temp[2], months[temp[1]], temp[0])
 
 #calculates the number of years from date1 to date2 if date2 is supplied, years since date1 if not
-def calcAge(date1, date2=date.today):
+def calcAge(date1, date2=date.today()):
     return date2.year - date1.year - ((date2.month, date2.day) < (date1.month, date1.day))
 
 
