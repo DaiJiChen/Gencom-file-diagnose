@@ -63,6 +63,7 @@ def calcAge(date1, date2=date.today()):
 
 # US02
 def BirtBeforeMarr(gc):
+    success = -1
     for id, fam in gc.families.items():
         if fam.marr != None:
             marrdate = makeDate(fam.marr)
@@ -73,7 +74,7 @@ def BirtBeforeMarr(gc):
                 if calcAge(husbbirt, marrdate) < 0:
                     print("ERROR: FAMILY: US03: Family ", id, ": Individual ", husb.name, " borns", husb.birt,
                           " before marry", fam.marr)
-                    return 0
+                    success = 0
                     remove = True
             if fam.wife != None:
                 wife = gc.individuals[fam.wife]
@@ -81,23 +82,30 @@ def BirtBeforeMarr(gc):
                 if calcAge(wifebirt, marrdate) < 0:
                     print("ERROR: FAMILY: US03: Family ", id, ": Individual ", wife.name, " borns", wife.birt,
                           " before marry", fam.marr)
-                    return 0
+                    success = 0
                     remove = True
 
             if remove:
                 gc.families.pop(id)
-    return 1
+    if success == 0:
+        return 0
+    else:
+        return 1
 
 
 # US03
 def BirtBeforeDeat(gc):
+    success = -1
     for id, indi in gc.individuals.items():
         if indi.deat != None:
             if indi.age < 0:
                 print("ERROR: INDIVIDUAL: US02: ", id, ": Birth", indi.birt," before death", indi.deat)
-                return 0
+                success = 0
                 gc.individuals.pop(id)
-    return 1
+    if success == 0:
+        return 0
+    else:
+        return 1
 
 
 # US0506 Marriage Before Death AND Divorce Before Death
@@ -129,35 +137,43 @@ def getDeathDate(gc, i):
 
 # User Story 05
 def MarriageBeforeDeath(gc):
+    success = -1
     for id, fam in gc.families.items():
         if (getDeathDate(gc, fam.husb) != None):
             if (CompareDate(makeDate(fam.marr), makeDate(getDeathDate(gc, fam.husb))) > 0):
                 print(id + " family have marriage dates after death dates")
-                return 0
+                success = 0
         if (getDeathDate(gc, fam.wife) != None):
             if (CompareDate(makeDate(fam.marr), makeDate(getDeathDate(gc, fam.wife))) > 0):
                 print(id + " family have marriage dates after death dates")
-                return 0
+                success = 0
         else:
             print("There are no marriage dates after the death dates in family " + id)
-            return 1
+    if success == 0:
+        return 0
+    else:
+        return 1
 
 
 #User Story 06
-def DivorceBeforeDeath(gc):    
-    for id, fam in gc.families.items():       
+def DivorceBeforeDeath(gc):
+    success = -1
+    for id, fam in gc.families.items():
         if(fam.div != None):           
             if(getDeathDate(gc,fam.husb) != None):                
                 if(CompareDate(makeDate(fam.div),makeDate(getDeathDate(gc,fam.husb)))>0):                   
                     print(id + " family have div dates after death dates")
-                    return 0
+                    success = 0
             if(getDeathDate(gc,fam.wife) != None):                
                 if(CompareDate(makeDate(fam.div),makeDate(getDeathDate(gc,fam.wife)))>0):                    
                     print(id + " family have div dates after death dates")
-                    return 0
+                    success = 0
         else:            
             print("There are no div dates after the death dates in family "+ id)
-            return 1
+    if success == 0:
+        return 0
+    else:
+        return 1
 
 
 # US07
