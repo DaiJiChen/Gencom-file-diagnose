@@ -239,7 +239,7 @@ def divBeforeMarr(gc):
     else:
         return 1
 
-# US09 unique ID
+# US22 unique ID
 # duplicateID() takes the entire Gedcom file as argument and iterate over all individual and family records.
 # It removes any entry (individual or family) that has a duplicate ID.
 # It prints a message displaying the entry id.
@@ -308,6 +308,7 @@ def marrAfter14(gc):
 
 
 def validate(gc):
+  duplicateID(gc)
   under150(gc)
   marrAfter14(gc)
   MarriageBeforeDivorce(gc)
