@@ -26,7 +26,7 @@ months = {
 #converts a date in GEDCOM format to a date object
 def makeDate(GEDDate):
     temp = GEDDate.split(' ')
-    return date(temp[2], months[temp[1]], temp[0])
+    return date(int(temp[2]), months[temp[1]], int(temp[0]))
 
 #calculates the number of years from date1 to date2 if date2 is supplied, years since date1 if not
 def calcAge(date1, date2=date.today()):
