@@ -204,6 +204,84 @@ def under150(gc):
             print("Error with individual ", id, ": Age is not less than 150")
             gc.individuals.pop(id)
 
+# US08 US09 marriage before divorce and unique ID
+# Get the marriage date of a family
+def getMarrDate(gc, f):
+    for id, fam in gc.families.items():
+        if f == id:
+            if fam.marr != None:
+                return fam.marr
+
+# Get the divorce date of a family
+def getDivDate(gc, f):
+    for id, fam in gc.families.items():
+        if f == id:
+            if fam.div != None:
+                return fam.div
+            
+# US08 marriage before divorce
+# divBeforeMarr() takes the entire Gedcom file as argument and iterate over all individual and family records.
+# It removes any family that has a marriage date prior to its divorce date.
+# It prints a message displaying the family id.
+def divBeforeMarr(gc):
+    invalid = -1
+    for id, fam in gc.families.items():
+        divDate = makeDate(getDivDate(gc, id))
+        marrDate = makeDate(getMarrDate(gc, id))
+        if divDate != None and marrDate != None:
+            if CompareDate(marrDate, divDate) > 0:
+                print(id + "family has divorce date before marriage date")
+                invalid = 0
+        else:
+            print("Missing divorce date or marriage date in the family record!")
+    if invalid == 0:
+        return 0
+    else:
+        return 1
+
+# US09 unique ID
+# duplicateID() takes the entire Gedcom file as argument and iterate over all individual and family records.
+# It removes any entry (individual or family) that has a duplicate ID.
+# It prints a message displaying the entry id.
+
+def duplicateID(gc):
+    duplicated = -1
+
+    existedIndi = {}
+    duplicateIndi = []
+
+    for indiID in gc.individuals.items():
+        if indiID != None:
+            if indiID not in existedIndi:
+                existedIndi[indiID] = 1
+            else:
+                if existedIndi[indiID] == 1:
+                    duplicateIndi.append(indiID)
+                existedIndi[indiID] += 1
+        else:
+            print("Missing individual ID!")
+
+    existedFam = {}
+    duplicateFam = []
+
+    for famID in gc.families.items():
+        if famID != None:
+            if famID not in existedFam:
+                existedFam[famID] = 1
+            else:
+                if existedFam[famID] == 1:
+                    duplicateFam.append(famID)
+                existedIndi[famID] += 1
+        else:
+            print("Missing family ID!")
+
+    if len(duplicateIndi) > 0 or len(duplicateFam) > 0:
+        duplicated = 0
+    
+    if duplicated == 0:
+        return 0
+    else:
+        return 1
 
 # US10
 def marrAfter14(gc):
