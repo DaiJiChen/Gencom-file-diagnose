@@ -11,7 +11,7 @@ class Testing(unittest.TestCase):
     def test1(self):
         gc = Parser.Gedcom("US05a.ged")
         self.assertEqual(validate.MarriageBeforeDeath(gc),1)
-    # A future case    
+    # A failure case    
     def test2(self):
         gc = Parser.Gedcom("US05b.ged")
         self.assertEqual(validate.MarriageBeforeDeath(gc),0)    
