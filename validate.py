@@ -294,7 +294,6 @@ def marrAfter14(gc):
 def validate(gc):
   under150(gc)
   marrAfter14(gc)
-  MarriageBeforeDivorce(gc)
   MarriageBeforeDeath(gc)
   DivorceBeforeDeath(gc)
   BirtBeforeDeat(gc)
