@@ -65,9 +65,12 @@ def marrAfter14(gc):
             
 def BirtBeforeDeat(gc):
     for id, indi in gc.individuals.items():
-        if indi.age < 0:
-            print("Error with individual ", id, ": Birth before death")
-            gc.individuals.pop(id)
+        if indi.deat != None:
+            if indi.age < 0:
+                print("ERROR: INDIVIDUAL: US02: ", id, ": Birth", indi.birt," before death", indi.deat)
+                return 0
+                gc.individuals.pop(id)
+    return 1
 
 def BirtBeforeMarr(gc):
     for id, fam in gc.families.items():
@@ -78,17 +81,20 @@ def BirtBeforeMarr(gc):
                 husb = gc.individuals[fam.husb]
                 husbbirt = makeDate(husb.birt)
                 if calcAge(husbbirt, marrdate) < 0:
-                    print("Error with family ", id, ": Individual ", husb, " was not at least 14 at time of marriage")
+                    print("ERROR: FAMILY: US03: Family ", id, ": Individual ", husb.name, " borns", husb.birt, " before marry", fam.marr)
+                    return 0
                     remove = True
             if fam.wife != None:
                 wife = gc.individuals[fam.wife]
                 wifebirt = makeDate(wife.birt)
                 if calcAge(wifebirt, marrdate) < 0:
-                    print("Error with family ", id, ": Individual ", wife, " was not at least 14 at time of marriage")
+                    print("ERROR: FAMILY: US03: Family ", id, ": Individual ", wife.name, " borns", wife.birt," before marry", fam.marr)
+                    return 0
                     remove = True
 
             if remove:
                 gc.families.pop(id)
+    return 1
 
 
 
