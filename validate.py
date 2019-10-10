@@ -140,20 +140,21 @@ def getDeathDate(gc, i):
                 return indi.deat
 
 
-# User Story 05
+#User Story 05
 def MarriageBeforeDeath(gc):
     success = -1
     for id, fam in gc.families.items():
-        if (getDeathDate(gc, fam.husb) != None):
-            if (CompareDate(makeDate(fam.marr), makeDate(getDeathDate(gc, fam.husb))) > 0):
-                print(id + " family have marriage dates after death dates")
-                success = 0
-        if (getDeathDate(gc, fam.wife) != None):
-            if (CompareDate(makeDate(fam.marr), makeDate(getDeathDate(gc, fam.wife))) > 0):
-                print(id + " family have marriage dates after death dates")
-                success = 0
-        else:
-            print("There are no marriage dates after the death dates in family " + id)
+        if(fam.marr != None):           
+            if(getDeathDate(gc,fam.husb) != None):                
+                if(CompareDate(makeDate(fam.marr),makeDate(getDeathDate(gc,fam.husb)))>0):                   
+                    print(id + " family have marriage dates after death dates")
+                    success = 0
+            if(getDeathDate(gc,fam.wife) != None):                
+                if(CompareDate(makeDate(fam.marr),makeDate(getDeathDate(gc,fam.wife)))>0):                    
+                    print(id + " family have marriage dates after death dates")
+                    success = 0
+        else:            
+            print("There are no marriage dates after the death dates in family "+ id)
     if success == 0:
         return 0
     else:
