@@ -173,7 +173,7 @@ class Individual:
 
 def main(filename):
     gc = Gedcom(filename)
-    validate(gc)
+    validate.validate(gc)
     gc.print_table()
     
 
