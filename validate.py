@@ -62,6 +62,9 @@ def marrAfter14(gc):
 
             if remove:
                 gc.families.pop(id)
+
+
+
             
 def BirtBeforeDeat(gc):
     for id, indi in gc.individuals.items():
@@ -71,6 +74,10 @@ def BirtBeforeDeat(gc):
                 return 0
                 gc.individuals.pop(id)
     return 1
+
+
+
+
 
 def BirtBeforeMarr(gc):
     for id, fam in gc.families.items():
