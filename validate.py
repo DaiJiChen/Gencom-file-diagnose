@@ -44,24 +44,29 @@ def under150(gc):
 
 def marrAfter14(gc):
     for id, fam in gc.families.items():
-        marrdate = makeDate(fam.marr)
-        remove = false
-        if fam.husb != None:
-            husb = gc.individuals[fam.husb]
-            husbbirt = makeDate(husb.birt)
-            if calcAge(husbbirt, marrdate) < 14:
-                print("Error with family ", id, ": Individual ", husb, " was not at least 14 at time of marriage")
-                remove = true
-        if fam.wife != None:
-            wife = gc.individuals[fam.wife]
-            wifebirt = makeDate(wife.birt)
-            if calcAge(wifebirt, marrdate) < 14:
-                print("Error with family ", id, ": Individual ", wife, " was not at least 14 at time of marriage")
-                remove = true
-        
-        if remove:
-            gc.families.pop(id)
+        if fam.marr != None:
+            marrdate = makeDate(fam.marr)
+            remove = False
+            if fam.husb != None:
+                husb = gc.individuals[fam.husb]
+                husbbirt = makeDate(husb.birt)
+                if calcAge(husbbirt, marrdate) < 14:
+                    print("Error with family ", id, ": Individual ", husb, " was not at least 14 at time of marriage")
+                    remove = True
+            if fam.wife != None:
+                wife = gc.individuals[fam.wife]
+                wifebirt = makeDate(wife.birt)
+                if calcAge(wifebirt, marrdate) < 14:
+                    print("Error with family ", id, ": Individual ", wife, " was not at least 14 at time of marriage")
+                    remove = True
+
+            if remove:
+                gc.families.pop(id)
+
+
+
             
+<<<<<<< HEAD
            
 # Code for birth and death and marriage and divorce before current date (functions commented out because they were not tested yet)
 # def birtDeatB4CurrDate(gc):
@@ -132,6 +137,44 @@ def MarriageBeforeDeath(gc):
         else:            
             print("There are no marriage dates after the death dates in family "+ id)
             return 1
+=======
+def BirtBeforeDeat(gc):
+    for id, indi in gc.individuals.items():
+        if indi.deat != None:
+            if indi.age < 0:
+                print("ERROR: INDIVIDUAL: US02: ", id, ": Birth", indi.birt," before death", indi.deat)
+                return 0
+                gc.individuals.pop(id)
+    return 1
+
+
+
+
+
+def BirtBeforeMarr(gc):
+    for id, fam in gc.families.items():
+        if fam.marr != None:
+            marrdate = makeDate(fam.marr)
+            remove = False
+            if fam.husb != None:
+                husb = gc.individuals[fam.husb]
+                husbbirt = makeDate(husb.birt)
+                if calcAge(husbbirt, marrdate) < 0:
+                    print("ERROR: FAMILY: US03: Family ", id, ": Individual ", husb.name, " borns", husb.birt, " before marry", fam.marr)
+                    return 0
+                    remove = True
+            if fam.wife != None:
+                wife = gc.individuals[fam.wife]
+                wifebirt = makeDate(wife.birt)
+                if calcAge(wifebirt, marrdate) < 0:
+                    print("ERROR: FAMILY: US03: Family ", id, ": Individual ", wife.name, " borns", wife.birt," before marry", fam.marr)
+                    return 0
+                    remove = True
+
+            if remove:
+                gc.families.pop(id)
+    return 1
+>>>>>>> US02_and_US03
 
 #User Story 06
 def DivorceBeforeDeath(gc):    
@@ -154,6 +197,11 @@ def DivorceBeforeDeath(gc):
 def validate(gc):
   under150(gc)
   marrAfter14(gc)
+<<<<<<< HEAD
   MarriageBeforeDeath(gc)
   DivorceBeforeDeath(gc)  
     
+=======
+  BirtBeforeDeat(gc)
+  BirtBeforeMarr(gc)
+>>>>>>> US02_and_US03
