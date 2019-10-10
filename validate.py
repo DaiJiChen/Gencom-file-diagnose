@@ -62,6 +62,29 @@ def marrAfter14(gc):
         if remove:
             gc.families.pop(id)
             
+           
+# Code for birth and death and marriage and divorce before current date (functions commented out because they were not tested yet)
+# def birtDeatB4CurrDate(gc):
+#     for id, indi in gc.individuals.items():
+#         if calcAge(indi.birt) >= 0:
+#             print("Error with individual ", id, ": Birth is after current date.")
+#             gc.individuals.pop(id)
+#         elif calcAge(indi.deat) >= 0:
+#             print("Error with individual ", id, ": Death is after current date.")
+#             gc.individuals.pop(id)
+            
+            
+# def marrDivB4CurrDate(gc):          
+#     for id, fam in gc.families.items():  
+#         marrdate = makeDate(fam.marr)  
+#         divdate =  makeDate(fam.div)   
+#         if calcAge(marrdate) >= 0:
+#             print("Error with family ", id, ": Marriage is after current date.")
+#             gc.individuals.pop(id)
+#         elif calcAge(divdate) >= 0:
+#             print("Error with family ", id, ": Divorce is after current date.")
+#             gc.individuals.pop(id)
+
 
 
 
