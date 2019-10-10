@@ -1,0 +1,32 @@
+0 HEAD
+1 SOUR Family Echo
+2 WWW http://www.familyecho.com/
+0 @I1@ INDI
+1 NAME Tim /Arkiv/
+2 GIVN Tim
+2 SURN Arkiv
+2 _MARNM Arkiv
+1 SEX M
+1 BIRT
+2 DATE 12 AUG 1960
+1 FAMS @F1@
+1 FAMC @F2@
+0 @I2@ INDI
+1 NAME Jill /Arkiv/
+2 GIVN Jill
+2 SURN Arkiv
+2 _MARNM Arkiv
+1 SEX F
+1 BIRT
+2 DATE 15 MAR 1965
+1 FAMS @F1@
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 MARR
+2 DATE 10 JAN 1978
+1 _CURRENT Y
+0 @F2@ FAM
+1 CHIL @I1@
+1 _CURRENT N
+0 TRLR

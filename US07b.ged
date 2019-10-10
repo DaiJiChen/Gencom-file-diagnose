@@ -1,0 +1,38 @@
+0 HEAD
+1 SOUR Family Echo
+2 WWW http://www.familyecho.com/
+0 @I1@ INDI
+1 NAME Tim /Arkiv/
+2 GIVN Tim
+2 SURN Arkiv
+2 _MARNM Arkiv
+1 SEX M
+1 BIRT
+2 DATE 12 AUG 1800
+1 FAMC @F1@
+0 @I2@ INDI
+1 NAME
+1 SEX M
+1 FAMS @F1@
+0 @I3@ INDI
+1 NAME
+1 SEX F
+1 FAMS @F1@
+0 @I4@ INDI
+1 NAME Samantha /Arkiv/
+2 GIVN Samantha
+2 SURN Arkiv
+2 _MARNM Arkiv
+1 SEX F
+1 BIRT
+2 DATE 12 AUG 1800
+1 DEAT Y
+2 DATE 12 AUG 1996
+1 FAMC @F1@
+0 @F1@ FAM
+1 HUSB @I2@
+1 WIFE @I3@
+1 CHIL @I1@
+1 CHIL @I4@
+1 _CURRENT Y
+0 TRLR
