@@ -123,8 +123,7 @@ def MarriageBeforeDeath(gc):
     for id, fam in gc.families.items():     
         if(getDeathDate(gc,fam.husb) != None):        
             if(CompareDate(makeDate(fam.marr),makeDate(getDeathDate(gc,fam.husb)))>0):     
-                print(id + " family have marriage dates after death dates")
-                            
+                print(id + " family have marriage dates after death dates")                            
         if(getDeathDate(gc,fam.wife) != None):            
             if(CompareDate(makeDate(fam.marr),makeDate(getDeathDate(gc,fam.wife)))>0):                
                 print(id + " family have marriage dates after death dates")                
