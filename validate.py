@@ -123,13 +123,15 @@ def MarriageBeforeDeath(gc):
     for id, fam in gc.families.items():     
         if(getDeathDate(gc,fam.husb) != None):        
             if(CompareDate(makeDate(fam.marr),makeDate(getDeathDate(gc,fam.husb)))>0):     
-                print(id + " family have marriage dates after death dates")                            
+                print(id + " family have marriage dates after death dates")
+                return 0
         if(getDeathDate(gc,fam.wife) != None):            
             if(CompareDate(makeDate(fam.marr),makeDate(getDeathDate(gc,fam.wife)))>0):                
-                print(id + " family have marriage dates after death dates")                
+                print(id + " family have marriage dates after death dates")
+                return 0
         else:            
             print("There are no marriage dates after the death dates in family "+ id)
-
+            return 1
 
 #User Story 06
 def DivorceBeforeDeath(gc):    
@@ -137,12 +139,15 @@ def DivorceBeforeDeath(gc):
         if(fam.div != None):           
             if(getDeathDate(gc,fam.husb) != None):                
                 if(CompareDate(makeDate(fam.div),makeDate(getDeathDate(gc,fam.husb)))>0):                   
-                    print(id + " family have div dates after death dates")                    
+                    print(id + " family have div dates after death dates")
+                    return 0
             if(getDeathDate(gc,fam.wife) != None):                
                 if(CompareDate(makeDate(fam.div),makeDate(getDeathDate(gc,fam.wife)))>0):                    
-                    print(id + " family have div dates after death dates")                    
+                    print(id + " family have div dates after death dates")
+                    return 0
         else:            
             print("There are no div dates after the death dates in family "+ id)
+            return 1
 
 
 
