@@ -212,6 +212,34 @@ def under150(gc):
             print("US07 Error with individual ", id, ": Age is not less than 150")
 
 
+<<<<<<< HEAD
+=======
+# US04 US22 marriage before divorce and unique ID
+            
+# US04 marriage before divorce
+# divBeforeMarr() takes the entire Gedcom file as argument and iterate over all individual and family records.
+# It removes any family that has a marriage date prior to its divorce date.
+# It prints a message displaying the family id.
+def marrBeforeDiv(gc):
+    invalid = -1
+    for id, fam in gc.families.items():
+        if fam.div != None and fam.marr != None:
+            divDate = makeDate(fam.div)
+            marrDate = makeDate(fam.marr)
+            if CompareDate(marrDate, divDate) > 0:
+                print(id + " family has marriage date after divorce date")
+                invalid = 0
+        elif fam.div == None and fam.marr != None:
+            print("Missing divorce date in the family record!")
+        elif fam.div != None and fam.marr == None:
+            print("Missing marriage date in the family record!")
+        elif fam.div == None and fam.marr == None:
+            print("Missing divorce date and marriage date in the family record!")
+    if invalid == 0:
+        return 0
+    else:
+        return 1
+>>>>>>> d12c0207c90490919e0c9995c8527c4d86b124b8
 
 
 # US10
