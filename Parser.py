@@ -22,11 +22,33 @@ months = {
     "DEC":12
 }
 
+days = {
+    1:31,
+    2:28,
+    3:31,
+    4:30,
+    5:31,
+    6:30,
+    7:31,
+    8:31,
+    9:30,
+    10:31,
+    11:30,
+    12:31
+}
 
-#converts a date in GEDCOM format to a date object
+#converts a date in GEDCOM format to a date object, checking for invalid dates
 def makeDate(GEDDate):
     temp = GEDDate.split(' ')
+<<<<<<< HEAD
     if temp[1] not in months:
+=======
+    day = int(temp[0])
+    month = months[temp[1]]
+    if day > days[month]:
+        return date(int(temp[2]),month,days[month])
+    else:
+>>>>>>> f69a83b096b271d60eac196811ecada7a6c832b8
         return date(int(temp[2]), months[temp[1]], int(temp[0]))
 
 #calculates the number of years from date1 to date2 if date2 is supplied, years since date1 if not
