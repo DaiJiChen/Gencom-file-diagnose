@@ -228,7 +228,7 @@ def under150(gc):
 
 # US04 US22 marriage before divorce and unique ID
             
-# US08 marriage before divorce
+# US04 marriage before divorce
 # divBeforeMarr() takes the entire Gedcom file as argument and iterate over all individual and family records.
 # It removes any family that has a marriage date prior to its divorce date.
 # It prints a message displaying the family id.
