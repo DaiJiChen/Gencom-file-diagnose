@@ -37,6 +37,7 @@ days = {
     12:31
 }
 
+
 #converts a date in GEDCOM format to a date object, checking for invalid dates
 def makeDate(GEDDate):
     temp = GEDDate.split(' ')
@@ -54,7 +55,11 @@ def calcAge(date1, date2=date.today()):
 
 class Gedcom:
     def __init__(self, filename):
-
+        self.US41 = []
+        self.existedIndi = {}
+        self.existedFam = {}
+        self.duplicateIndi = []
+        self.duplicateFam = []
         self.individuals = dict()
         self.families = dict()
 
@@ -89,15 +94,26 @@ class Gedcom:
                 tag, args = args, tag
 
             #levle == "0" means beginning of a individual or family
+
             if level == "0":
-                if tag  == "INDI":
+                if tag == "INDI":
                     flag = 1
                     indi = args.replace("@", "")
-                    self.individuals[indi] = Individual()
+                    if indi not in self.existedIndi:
+                        self.existedIndi[indi] = 1
+                        self.individuals[indi] = Individual()
+                    else:
+                        flag = 3
+                        self.duplicateIndi.append("US22 Error with individual " + str(indi) + " : " + "duplicate ID")
                 if tag == "FAM":
                     flag = 2
                     fam = args.replace("@", "")
-                    self.families[fam] = Family()
+                    if fam not in self.existedFam:
+                        self.existedFam[fam] = 1
+                        self.families[fam] = Family()
+                    else:
+                        flag = 3
+                        self.duplicateFam.append("US22 Error with family " + str(fam) + " : " + "duplicate ID")
 
             elif flag in [1, 2]:
                 if args != "":
@@ -134,6 +150,7 @@ class Gedcom:
                                 self.families[fam].div = args
             plevel = level
             ptag = tag
+        self.illDate()
         for indi in self.individuals.values():
             indi.calcuAge()
 
@@ -155,6 +172,45 @@ class Gedcom:
             elif fam.husb != None and fam.wife == None:
                 self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, None, fam.chil])
         print(self.fam_table)
+
+    def illDate(self):
+        for id, indi in self.individuals.items():
+            if indi.birt != None:
+                temp = indi.birt.split(' ')
+                day = int(temp[0])
+                month = months[temp[1]]
+                if day > days[month]:
+                    self.US41.append("US41 Error with individual "+ str(indi.name)+ ": Birthday "+ str(indi.birt)+ "is illegitimate")
+                    temp[0] = str(days[months[temp[1]]])
+                indi.birt = temp[0] + " " + temp[1] + " " + temp[2]
+
+            if indi.deat != None:
+                temp = indi.deat.split(' ')
+                day = int(temp[0])
+                month = months[temp[1]]
+                if day > days[month]:
+                    self.US41.append("US41 Error with individual " + str(indi.name) + ": death date "+ str(indi.deat)+ "is illegitimate")
+                    temp[0] = str(days[months[temp[1]]])
+                indi.deat = temp[0] + " " + temp[1] + " " + temp[2]
+
+        for id, fam in self.families.items():
+            if fam.div != None:
+                temp = fam.div.split(' ')
+                day = int(temp[0])
+                month = months[temp[1]]
+                if day > days[month]:
+                    self.US41.append("US41 Error with family "+ str(id)+ ": divorce date " + str(fam.div)+ "is illegitimate")
+                    temp[0] = str(days[months[temp[1]]])
+                fam.div = temp[0] + " " + temp[1] + " " + temp[2]
+
+            if fam.marr != None:
+                temp = fam.marr.split(' ')
+                day = int(temp[0])
+                month = months[temp[1]]
+                if day > days[month]:
+                    self.US41.append("US41 Error with family " + str(id)+ ": marriage date "+ str(fam.marr)+ "is illegitimate")
+                    temp[0] = str(days[months[temp[1]]])
+                fam.marr = temp[0] + " " + temp[1] + " " + temp[2]
 
 
 
@@ -195,6 +251,12 @@ def main(filename):
     gc = Gedcom(filename)
     gc.print_table()
     validate.validate(gc)
+    for x in gc.US41:
+        print(x)
+    for x in gc.duplicateIndi:
+        print(x)
+    for x in gc.duplicateFam:
+        print(x)
     
 
 if __name__ == "__main__" :
