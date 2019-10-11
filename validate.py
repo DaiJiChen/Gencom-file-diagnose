@@ -300,3 +300,4 @@ def validate(gc):
   DivorceBeforeDeath(gc)
   BirtBeforeDeat(gc)
   BirtBeforeMarr(gc)
+  divBeforeMarr(gc)

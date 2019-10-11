@@ -26,7 +26,8 @@ months = {
 #converts a date in GEDCOM format to a date object
 def makeDate(GEDDate):
     temp = GEDDate.split(' ')
-    return date(int(temp[2]), months[temp[1]], int(temp[0]))
+    if temp[1] not in months:
+        return date(int(temp[2]), months[temp[1]], int(temp[0]))
 
 #calculates the number of years from date1 to date2 if date2 is supplied, years since date1 if not
 def calcAge(date1, date2=date.today()):
@@ -35,6 +36,7 @@ def calcAge(date1, date2=date.today()):
 
 class Gedcom:
     def __init__(self, filename):
+
         self.individuals = dict()
         self.families = dict()
 
@@ -173,8 +175,8 @@ class Individual:
 
 def main(filename):
     gc = Gedcom(filename)
-    validate.validate(gc)
     gc.print_table()
+    validate.validate(gc)
     
 
 if __name__ == "__main__" :
