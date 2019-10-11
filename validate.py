@@ -60,51 +60,38 @@ def calcAge(date1, date2=date.today()):
 #US01_1           
 def birtDeatB4CurrDate(gc):
     removedIndividuals= []
-    
     for id, indi in gc.individuals.items():
-        remove = False
-        
+        remove = False  
         if indi.birt != None:
             if calcAge(makeDate(indi.birt)) >= 0:
                 print("Error with individual ", id, ": Birth is after current date.")
-                remove = True
-                
+                remove = True      
         if indi.deat != None:
             if calcAge(makeDate(indi.deat)) >= 0:
                 print("Error with individual ", id, ": Death is after current date.")
                 remove = True
-                
-                
         if remove:
-            removedIndividuals.append(id)
-            
+            removedIndividuals.append(id)     
     for removeId in removedIndividuals:
         gc.individuals.pop(removeId)   
-               
-         
+                     
 #US01_2
 def marrDivB4CurrDate(gc):
     removedFams = []
-    
     for famid, fam in gc.families.items():
         remove = False
         if fam.marr != None:
             marrdate = makeDate(fam.marr)
             if calcAge(marrdate) >= 0:
                 print("Error with family ", famid, ": Marriage is after current date.")
-                remove = True
-                
-                
+                remove = True      
         if fam.div != None:
             divdate =  makeDate(fam.div)
             if calcAge(divdate) >= 0:
                 print("Error with family ", famid, ": Divorce is after current date.")
                 remove = True
-        
-            
         if remove:
-            removedFams.append(famid)
-        
+            removedFams.append(famid)     
     for removeId in removedFams:
         gc.families.pop(removeId)
 
