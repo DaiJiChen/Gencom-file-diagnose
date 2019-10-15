@@ -59,24 +59,33 @@ def calcAge(date1, date2=date.today()):
 
 #US01_1           
 def birtDeatB4CurrDate(gc):
+    success = -1
     removedIndividuals= []
     for id, indi in gc.individuals.items():
         remove = False  
         if indi.birt != None:
             if calcAge(makeDate(indi.birt)) < 0:
                 print("US01 Error with individual ", id, ": Birth is after current date.")
-                remove = True      
+                remove = True
+                success = 0
         if indi.deat != None:
             if calcAge(makeDate(indi.deat)) < 0:
                 print("US01 Error with individual ", id, ": Death is after current date.")
                 remove = True
+                success = 0
         if remove:
             removedIndividuals.append(id)     
     for removeId in removedIndividuals:
-        gc.individuals.pop(removeId)   
+        gc.individuals.pop(removeId)
+
+    if success == 0:
+        return 0
+    else:
+        return 1
                      
 #US01_2
 def marrDivB4CurrDate(gc):
+    success = -1
     removedFams = []
     for famid, fam in gc.families.items():
         remove = False
@@ -84,16 +93,23 @@ def marrDivB4CurrDate(gc):
             marrdate = makeDate(fam.marr)
             if calcAge(marrdate) < 0:
                 print("US01 Error with family     ", famid, ": Marriage is after current date.")
-                remove = True      
+                remove = True
+                success = 0
         if fam.div != None:
             divdate =  makeDate(fam.div)
             if calcAge(divdate) < 0:
                 print("US01 Error with family     ", famid, ": Divorce is after current date.")
                 remove = True
+                success = 0
         if remove:
             removedFams.append(famid)     
     for removeId in removedFams:
         gc.families.pop(removeId)
+
+    if success == 0:
+        return 0
+    else:
+        return 1
 
         
         
@@ -288,7 +304,7 @@ def validate(gc):
   BirtBeforeMarr(gc) # US02
   BirtBeforeDeat(gc) # US03
   marrBeforeDiv(gc)
-  birtDeatB4CurrDate(gc)
-  marrDivB4CurrDate(gc)
+  birtDeatB4CurrDate(gc) # US01
+  marrDivB4CurrDate(gc) # US01
   siblingsFewerThan15(gc) # US14
   multiBirthLessThan5(gc) # US15
