@@ -83,12 +83,12 @@ def marrDivB4CurrDate(gc):
         if fam.marr != None:
             marrdate = makeDate(fam.marr)
             if calcAge(marrdate) < 0:
-                print("US01 Error with family ", famid, ": Marriage is after current date.")
+                print("US01 Error with family     ", famid, ": Marriage is after current date.")
                 remove = True      
         if fam.div != None:
             divdate =  makeDate(fam.div)
             if calcAge(divdate) < 0:
-                print("US01 Error with family ", famid, ": Divorce is after current date.")
+                print("US01 Error with family     ", famid, ": Divorce is after current date.")
                 remove = True
         if remove:
             removedFams.append(famid)     
@@ -141,7 +141,6 @@ def BirtBeforeDeat(gc):
 
 # US04 marriage before divorce
 # divBeforeMarr() takes the entire Gedcom file as argument and iterate over all individual and family records.
-# It removes any family that has a marriage date prior to its divorce date.
 # It prints a message displaying the family id.
 def marrBeforeDiv(gc):
     invalid = -1
@@ -150,14 +149,13 @@ def marrBeforeDiv(gc):
             divDate = makeDate(fam.div)
             marrDate = makeDate(fam.marr)
             if calcAge(marrDate, divDate) < 0:
-                print("US04 Error with family ", id + " : family has marriage date after divorce date")
+                print("US04 Error with family     ", id + " : family has marriage date after divorce date")
                 invalid = 0
     if invalid == 0:
         return 0
     else:
         return 1
-    
-# US0506 Marriage Before Death AND Divorce Before Death
+
 
 # get death date from individuals
 def getDeathDate(gc, i):
@@ -207,43 +205,20 @@ def DivorceBeforeDeath(gc):
 
 # US07
 def under150(gc):
+    success = -1
     for id, indi in gc.individuals.items():
         if indi.age >= 150:
             print("US07 Error with individual ", id, ": Age is not less than 150")
-
-
-<<<<<<< HEAD
-=======
-# US04 US22 marriage before divorce and unique ID
-            
-# US04 marriage before divorce
-# divBeforeMarr() takes the entire Gedcom file as argument and iterate over all individual and family records.
-# It removes any family that has a marriage date prior to its divorce date.
-# It prints a message displaying the family id.
-def marrBeforeDiv(gc):
-    invalid = -1
-    for id, fam in gc.families.items():
-        if fam.div != None and fam.marr != None:
-            divDate = makeDate(fam.div)
-            marrDate = makeDate(fam.marr)
-            if CompareDate(marrDate, divDate) > 0:
-                print(id + " family has marriage date after divorce date")
-                invalid = 0
-        elif fam.div == None and fam.marr != None:
-            print("Missing divorce date in the family record!")
-        elif fam.div != None and fam.marr == None:
-            print("Missing marriage date in the family record!")
-        elif fam.div == None and fam.marr == None:
-            print("Missing divorce date and marriage date in the family record!")
-    if invalid == 0:
+            success = 0
+    if success == 0:
         return 0
     else:
         return 1
->>>>>>> d12c0207c90490919e0c9995c8527c4d86b124b8
 
 
 # US10
 def marrAfter14(gc):
+    success = -1
     for id, fam in gc.families.items():
         if fam.marr != None:
             marrdate = makeDate(fam.marr)
@@ -252,14 +227,56 @@ def marrAfter14(gc):
                 husb = gc.individuals[fam.husb]
                 husbbirt = makeDate(husb.birt)
                 if calcAge(husbbirt, marrdate) < 14:
-                    print("US10 Error with family ", id, ": Individual ", husb.name, " was not at least 14 at time of marriage")
+                    print("US10 Error with family     ", id, ": Individual ", husb.name, " was not at least 14 at time of marriage")
+                    success = 0
 
             if fam.wife != None:
                 wife = gc.individuals[fam.wife]
                 wifebirt = makeDate(wife.birt)
                 if calcAge(wifebirt, marrdate) < 14:
-                    print("US10 Error with family ", id, ": Individual ", wife.name, " was not at least 14 at time of marriage")
+                    print("US10 Error with family     ", id, ": Individual ", wife.name, " was not at least 14 at time of marriage")
+                    success = 0
+    if success == 0:
+        return 0
+    else:
+        return 1
 
+
+# US14
+def siblingsFewerThan15(gc):
+    success = -1
+    for id, fam in gc.families.items():
+        if(len(fam.chil) > 15):
+            print("US14 Error with family     ", id, ": This family has more than 15 children")
+            success = 0
+    if success == 0:
+        return 0
+    else:
+        return 1
+
+# US15
+def multiBirthLessThan5(gc):
+    success = -1
+    for famID, fam in gc.families.items():
+        birthday = {}
+        for indiID, indi in gc.individuals.items():
+            if (indi.famc == famID):
+                if (indi.birt not in birthday):
+                    birthday[indi.birt] = 1
+                else:
+                    birthday[indi.birt] += 1
+        max = 0
+        for birthday, number in birthday.items():
+            if number>max:
+                max = number
+        if max>5:
+            print("US15 Error with family     ", famID, ": More than five siblings born at the same time")
+            success = 0
+
+    if success == 0:
+        return 0
+    else:
+        return 1
 
 
 
@@ -268,8 +285,10 @@ def validate(gc):
   marrAfter14(gc)
   MarriageBeforeDeath(gc)
   DivorceBeforeDeath(gc)
-  BirtBeforeDeat(gc)
-  BirtBeforeMarr(gc)
+  BirtBeforeMarr(gc) # US02
+  BirtBeforeDeat(gc) # US03
   marrBeforeDiv(gc)
   birtDeatB4CurrDate(gc)
   marrDivB4CurrDate(gc)
+  siblingsFewerThan15(gc) # US14
+  multiBirthLessThan5(gc) # US15

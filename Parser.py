@@ -104,7 +104,7 @@ class Gedcom:
                         self.individuals[indi] = Individual()
                     else:
                         flag = 3
-                        self.duplicateIndi.append("US22 Error with individual " + str(indi) + " : " + "duplicate ID")
+                        self.duplicateIndi.append("US22 Error with individual  " + str(indi) + " : " + "duplicate ID")
                 if tag == "FAM":
                     flag = 2
                     fam = args.replace("@", "")
@@ -113,7 +113,7 @@ class Gedcom:
                         self.families[fam] = Family()
                     else:
                         flag = 3
-                        self.duplicateFam.append("US22 Error with family " + str(fam) + " : " + "duplicate ID")
+                        self.duplicateFam.append("US22 Error with family  " + str(fam) + " : " + "duplicate ID")
 
             elif flag in [1, 2]:
                 if args != "":
@@ -180,7 +180,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with individual "+ str(indi.name)+ ": Birthday "+ str(indi.birt)+ "is illegitimate")
+                    self.US41.append("US41 Error with individual  "+ str(id)+ ": Birthday "+ str(indi.birt)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 indi.birt = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -189,7 +189,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with individual " + str(indi.name) + ": death date "+ str(indi.deat)+ "is illegitimate")
+                    self.US41.append("US41 Error with individual   " + str(id) + ": death date "+ str(indi.deat)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 indi.deat = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -199,7 +199,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with family "+ str(id)+ ": divorce date " + str(fam.div)+ "is illegitimate")
+                    self.US41.append("US41 Error with family      "+ str(id)+ ": divorce date " + str(fam.div)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.div = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -208,7 +208,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with family " + str(id)+ ": marriage date "+ str(fam.marr)+ "is illegitimate")
+                    self.US41.append("US41 Error with family      " + str(id)+ ": marriage date "+ str(fam.marr)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.marr = temp[0] + " " + temp[1] + " " + temp[2]
 

@@ -6,11 +6,11 @@ class TestUS02(unittest.TestCase):
     # A successful case
     def test_US02(self):
         gc = Parser.Gedcom(["gedcomfile.ged"])
-        self.assertEqual(validate.BirtBeforeMarr(gc), 1)
+        self.assertEqual(validate.siblingsFewerThan15(gc), 1)
     # A failure case
     def test_US02(self):
         gc = Parser.Gedcom(["bad_gedcomfile.ged"])
-        self.assertEqual(validate.BirtBeforeMarr(gc), 0)
+        self.assertEqual(validate.siblingsFewerThan15(gc), 0)
 
 
 if __name__ == '__main__':
