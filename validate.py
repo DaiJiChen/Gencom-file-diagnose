@@ -278,17 +278,94 @@ def multiBirthLessThan5(gc):
     else:
         return 1
 
-
+# US17
+def NoMarriagesToDescendants(gc):
+    success = -1
+    husbgroup=set()
+    wifegroup=set()
+    for id, fam in gc.families.items():
+        childrengroup=set()
+        if fam.husb != None:
+            if fam.wife != None:
+                husbset=set()
+                husbset.add(fam.husb)
+                if(husbset & husbgroup == set()):
+                    husbID=fam.husb
+                    husbgroup.add(fam.husb)
+                    for id, fam_a in gc.families.items():
+                        if fam_a.husb == husbID:
+                            childrengroup = childrengroup | fam_a.chil
+                    for id, fam_b in gc.families.items():
+                        if fam_b.husb == husbID:
+                            wifefam=set()
+                            wifefam.add(fam_b.wife)
+                            if(wifefam & childrengroup != set()):
+                                print("US17 Error with family     ", id, ": Parents marry their descendants")
+                                success = 0                                
+    for id, fam in gc.families.items():
+        childrengroup=set()
+        if fam.husb != None:
+            if fam.wife != None:
+                wifeset=set()
+                wifeset.add(fam.wife)
+                if(wifeset & wifegroup == set()):
+                    wifeID=fam.wife
+                    wifegroup.add(fam.wife)
+                    for id, fam_a in gc.families.items():
+                        if fam_a.wife == wifeID:
+                            childrengroup = childrengroup | fam_a.chil
+                    for id, fam_b in gc.families.items():
+                        if fam_b.wife == wifeID:
+                            husbfam=set()
+                            husbfam.add(fam_b.husb)
+                            if(husbfam & childrengroup != set()):
+                                print("US17 Error with family     ", id, ": Parents marry their descendants")
+                                success = 0                                
+    if success == 0:
+        return 0
+    else:
+        return 1           
+                
+# US18
+def SiblingsShouldNotMarry(gc):
+    success = -1
+    for id , fam in gc.families.items():
+        if fam.chil != None:
+            chilset = fam.chil
+            chillist = list(fam.chil)
+            if len(chillist)>1:
+                i = 0
+                while i<len(chillist):
+                    chilID=chillist[i]
+                    chilset.remove(chilID)
+                    for id, family in gc.families.items():
+                        if family.husb != None:
+                            if family.wife != None:
+                                if chilID == family.husb or chilID == family.wife:
+                                    famset = set()
+                                    famset.add(family.husb)
+                                    famset.add(family.wife)
+                                    if famset & chilset != set():
+                                        print("US18 Error with family     ", id, ": Siblings marry one another")
+                                        success = 0
+                    i += 1                    
+    if success == 0:
+        return 0
+    else:
+        return 1                                   
+            
 
 def validate(gc):
   under150(gc)
   marrAfter14(gc)
-  MarriageBeforeDeath(gc)
-  DivorceBeforeDeath(gc)
+  MarriageBeforeDeath(gc) # US05
+  DivorceBeforeDeath(gc) # US06
   BirtBeforeMarr(gc) # US02
   BirtBeforeDeat(gc) # US03
-  marrBeforeDiv(gc)
-  birtDeatB4CurrDate(gc)
+  marrBeforeDiv(gc) 
+  birtDeatB4CurrDate(gc) 
   marrDivB4CurrDate(gc)
   siblingsFewerThan15(gc) # US14
   multiBirthLessThan5(gc) # US15
+  NoMarriagesToDescendants(gc) # US17
+  SiblingsShouldNotMarry(gc) # US18
