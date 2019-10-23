@@ -243,6 +243,7 @@ def birthB4ParentMarr(gc):
                 if famID == famc:
                     if fam.marr != None:
                         marrDate = makeDate(fam.marr)
+                        print("indi:", indiID, "birth:", indi.birt, "fam:", famID, "marr:", fam.marr)
                         if calcAge(indiBirthDate, marrDate) > 0:
                             print("US08 Error with individual:", indiID, indi.name, "was born", indi.birt,
                                   "before parents' marriage date", fam.marr)
@@ -254,7 +255,7 @@ def birthB4ParentMarr(gc):
 
 # US09
 # Individual MUST be born before the death of his/her parents
-def birthBeParentDeath(gc):
+def birthB4ParentDeath(gc):
     invalid = -1
     for indiID, indi in gc.individuals.items():
         if indi.birt != None:
@@ -265,16 +266,16 @@ def birthBeParentDeath(gc):
                     if fam.husb != None:
                         husb = gc.individuals[fam.husb]
                         if husb.deat != None:
-                            patDeathDate = makeDate(husb.death)
+                            patDeathDate = makeDate(husb.deat)
                             if calcAge(indiBirthDate, patDeathDate) < 0:
-                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after father's death date ", husb.death)
+                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after father's death date ", husb.deat)
                                 invalid = 0
                     if fam.wife != None:
                         wife = gc.individuals[fam.wife]
                         if wife.deat != None:
                             matDeathDate = makeDate(wife.deat)
                             if calcAge(indiBirthDate, matDeathDate) < 0:
-                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after mother's death date ", wife.death)
+                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after mother's death date ", wife.deat)
                                 invalid = 0
     if invalid == 0:
         return 0
