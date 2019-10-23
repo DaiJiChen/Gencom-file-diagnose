@@ -215,6 +215,13 @@ def under150(gc):
     else:
         return 1
 
+# US08
+def birthBeforeMarr(gc):
+    return
+
+# US09
+def birthBeforeDeath(gc):
+    return
 
 # US10
 def marrAfter14(gc):
