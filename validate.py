@@ -247,7 +247,64 @@ def marrAfter14(gc):
         return 0
     else:
         return 1
-
+    
+# US12 Parents not too old    Mother should be less than 60 years older than her children and father should be less than 
+# 80 years older than his children
+def parrTooOld(gc):
+    for famid, fam in gc.families.items():
+        removedChildren = []
+        
+        if fam.chil != None:
+            if fam.wife != None:
+                mother = gc.individuals[fam.wife]
+                motherBirt = makeDate(mother.birt)
+                children = fam.chil
+                for childId in children:
+                    childM = gc.individuals[childId]
+                    childBirt = makeDate(childM.birt)
+                    if calcAge(motherBirt, childBirt) > 60:
+                        removedChildren.append(childId)
+                        print("Error with family ", famid, ": Mother is 60 years older than her child " + (childM.name) )
+                
+            if fam.husb != None:
+                father = gc.individuals[fam.husb]
+                fatherBirt = makeDate(father.birt)
+                children = fam.chil
+                for childId in children:
+                    childH = gc.individuals[childId]
+                    childBirt = makeDate(childH.birt)
+                    if calcAge(fatherBirt, childBirt) > 80:
+                        removedChildren.append(childId)
+                        print("Error with family ", famid, ": Father is 80 years older than his child " + (childH.name) )
+ 
+        
+        
+        for childID in removedChildren:
+            fam.chil.discard(childID)
+            gc.individuals[childID].famc = None
+            
+# US13 Siblings spacing    Birth dates of siblings should be more than 8 months apart or less than 2 days 
+# apart (twins may be born one day apart, e.g. 11:59 PM and 12:02 AM the following calendar day)
+def siblingSpace(gc):
+    for famid, fam in gc.families.items():
+        removedChildren = []
+        
+        if fam.chil != None:
+            children = fam.chil
+            #do nested for loop with variable i, j+1
+            for childId in children:
+                childOne = gc.individuals[childId]
+                childOneBirt = makeDate(childOne.birt)
+                for childIdO in children:
+                    childOther = gc.individuals[childIdO]
+                    childOtherBirt = makeDate(childOther.birt)
+                    if calcAge(childOneBirt, childOtherBirt) < 1 and calcAge(childOneBirt, childOtherBirt) != 0:
+                        removedChildren.append(childIdO)
+                        print("Error with family ", famid, ": Child birth distance not valid " + (childOther.name) )
+    
+    for childID in removedChildren:
+        fam.chil.discard(childID)
+        gc.individuals[childID].famc = None
 
 # US14
 def siblingsFewerThan15(gc):
@@ -417,8 +474,10 @@ def validate(gc):
   BirtBeforeMarr(gc) # US02
   BirtBeforeDeat(gc) # US03
   marrBeforeDiv(gc) 
-  birtDeatB4CurrDate(gc) 
-  marrDivB4CurrDate(gc)
+  birtDeatB4CurrDate(gc)# US01
+  marrDivB4CurrDate(gc)# US01
+  parrTooOld(gc)# US12
+  siblingSpace(gc)# US13
   siblingsFewerThan15(gc) # US14
   multiBirthLessThan5(gc) # US15
   maleLastNames(gc)
