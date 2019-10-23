@@ -232,19 +232,19 @@ def under150(gc):
         return 1
 
 # US08
-# Individual MUST be born before the marriage of his/her parents
-def birthBeforeMarr(gc):
+# Individual MUST be born after the marriage of his/her parents
+def birthB4ParentMarr(gc):
     invalid = -1
-    for id, indi in gc.individuals.items():
+    for indiID, indi in gc.individuals.items():
         if indi.birt != None:
             indiBirthDate = makeDate(indi.birt)
             famc = indi.famc
-            for id, fam in gc.families.items():
-                if id == famc:
+            for famID, fam in gc.families.items():
+                if famID == famc:
                     if fam.marr != None:
                         marrDate = makeDate(fam.marr)
-                        if calcAge(indiBirthDate, marrDate) < 0:
-                            print("US08 Error with individual:", id, indi.name, "was born", indi.birt,
+                        if calcAge(indiBirthDate, marrDate) > 0:
+                            print("US08 Error with individual:", indiID, indi.name, "was born", indi.birt,
                                   "before parents' marriage date", fam.marr)
                             invalid = 0
     if invalid == 0:
@@ -254,27 +254,27 @@ def birthBeforeMarr(gc):
 
 # US09
 # Individual MUST be born before the death of his/her parents
-def birthBeforeDeath(gc):
+def birthBeParentDeath(gc):
     invalid = -1
-    for id, indi in gc.individuals.items():
+    for indiID, indi in gc.individuals.items():
         if indi.birt != None:
             indiBirthDate = makeDate(indi.birt)
             famc = indi.famc
-            for id, fam in gc.families.items():
-                if id == famc:
+            for famID, fam in gc.families.items():
+                if famID == famc:
                     if fam.husb != None:
                         husb = gc.individuals[fam.husb]
                         if husb.deat != None:
                             patDeathDate = makeDate(husb.death)
                             if calcAge(indiBirthDate, patDeathDate) < 0:
-                                print("US09 Error with individual:", id, indi.name, "was born", indi.birt, "before father's death date ", husb.death)
+                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after father's death date ", husb.death)
                                 invalid = 0
-                        if fam.wife != None:
-                            wife = gc.individuals[fam.wife]
+                    if fam.wife != None:
+                        wife = gc.individuals[fam.wife]
                         if wife.deat != None:
                             matDeathDate = makeDate(wife.deat)
                             if calcAge(indiBirthDate, matDeathDate) < 0:
-                                print("US09 Error with individual:", id, indi.name, "was born", indi.birt, "before mother's death date ", wife.death)
+                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after mother's death date ", wife.death)
                                 invalid = 0
     if invalid == 0:
         return 0
@@ -430,8 +430,8 @@ def validate(gc):
   marrBeforeDiv(gc) 
   birtDeatB4CurrDate(gc) 
   marrDivB4CurrDate(gc)
-  birthBeforeMarr(gc) # US08
-  birthBeforeDeath(gc) # US09
+  birthB4ParentMarr(gc) # US08
+  birthB4ParentDeath(gc) # US09
   siblingsFewerThan15(gc) # US14
   multiBirthLessThan5(gc) # US15
   NoMarriagesToDescendants(gc) # US17
