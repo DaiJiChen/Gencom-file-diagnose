@@ -278,6 +278,33 @@ def multiBirthLessThan5(gc):
     else:
         return 1
 
+#US16
+def maleLastNames(gc):
+    success = -1
+    for id, fam in gc.families.items():
+        error = 0
+        lastName = None
+        if fam.husb != None:
+            fatherName = fam.husb.name
+            lastName = fatherName.split(' ')[-1]
+        for childID in fam.chil:
+            child = gc.individuals[childID]
+            if child.sex == "M":
+                if lastName == None:
+                    lastName = child.name.split(' ')[-1]
+                else:
+                    if lastname != child.name.split(' ')[-1]:
+                        success = 0
+                        if error == 0:
+                            print("US16 Error with family     ", id, ": At least one male has a different last name")
+                            error = 1
+
+    if success == 0:
+        return 0
+    else:
+        return 1
+    
+    
 # US17
 def NoMarriagesToDescendants(gc):
     success = -1
@@ -354,6 +381,26 @@ def SiblingsShouldNotMarry(gc):
     else:
         return 1                                   
             
+#US21
+def roleGender(gc):
+    success = -1
+    for id, fam in gc.families.items():
+        if fam.husb != None:
+            husband = gc.individuals[fam.husb]
+            if husband.sex != "M":
+                print("US21 Error with family     ", id, ": Husband " + husband + " is not male")
+                success = 0
+
+        if fam.wife != None:
+            wife = gc.individuals[fam.wife]
+            if wife.sex != "F":
+                print("US21 Error with family     ", id, ": Wife " + wife + " is not female")
+                success = 0
+
+    if success == 0:
+        return 0
+    else:
+        return 1
 
 def validate(gc):
   under150(gc)
@@ -367,5 +414,7 @@ def validate(gc):
   marrDivB4CurrDate(gc)
   siblingsFewerThan15(gc) # US14
   multiBirthLessThan5(gc) # US15
+  maleLastNames(gc)
   NoMarriagesToDescendants(gc) # US17
   SiblingsShouldNotMarry(gc) # US18
+  roleGender(gc)
