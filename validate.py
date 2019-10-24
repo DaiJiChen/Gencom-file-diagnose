@@ -243,7 +243,7 @@ def birthB4ParentMarr(gc):
                 if famID == famc:
                     if fam.marr != None:
                         marrDate = makeDate(fam.marr)
-                        print("indi:", indiID, "birth:", indi.birt, "fam:", famID, "marr:", fam.marr)
+                        #print("indi:", indiID, "birth:", indi.birt, "fam:", famID, "marr:", fam.marr)
                         if calcAge(indiBirthDate, marrDate) > 0:
                             print("US08 Error with individual:", indiID, indi.name, "was born", indi.birt,
                                   "before parents' marriage date", fam.marr)
