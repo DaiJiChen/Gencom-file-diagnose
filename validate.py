@@ -29,7 +29,6 @@ days = {
     11: 30,
     12: 31
 }
-
 # converts a date in GEDCOM format to a date object, checking for invalid dates
 
 
@@ -47,6 +46,33 @@ def makeDate(GEDDate):
 
 def calcAge(date1, date2=date.today()):
     return date2.year - date1.year - ((date2.month, date2.day) < (date1.month, date1.day))
+
+
+def countLeapYears(d):
+    years = d.year
+    if (d.month <= 2):
+        years -= 1
+    return int(years / 4 - years / 100 + years / 400)
+
+
+# This function returns number of days between two given dates
+def getDifference(dt1, dt2):
+    # COUNT TOTAL NUMBER OF DAYS BEFORE FIRST DATE 'dt1'
+    # initialize count using years and day
+    n1 = dt1.year * 365 + dt1.day
+    # Add days for months in given date
+    for i in range(0, dt1.month - 1):
+        n1 += days[i+1]
+    # Since every leap year is of 366 days,
+    # Add a day for every leap year
+    n1 += countLeapYears(dt1)
+    # SIMILARLY, COUNT TOTAL NUMBER OF DAYS BEFORE 'dt2'
+    n2 = dt2.year * 365 + dt2.day
+    for i in range(0, dt2.month - 1):
+        n2 += days[i+1]
+    n2 += countLeapYears(dt2)
+    # return difference between two counts
+    return (n2 - n1)
 
 
 # define testing functions here
@@ -355,19 +381,22 @@ def parrTooOld(gc):
 def siblingSpace(gc):
     success = -1
     for famid, fam in gc.families.items():
-        
         if fam.chil != None:
             children = fam.chil
+            s = []
+            for c in children:
+                s.append(c)
             #do nested for loop with variable i, j+1
-            for childId in children:
-                childOne = gc.individuals[childId]
+            for i in range(len(s)-1):
+                childOne = gc.individuals[s[i]]
                 childOneBirt = makeDate(childOne.birt)
-                for childIdO in children:
-                    childOther = gc.individuals[childIdO]
+
+                for j in range(i+1, len(s)):
+                    childOther = gc.individuals[s[j]]
                     childOtherBirt = makeDate(childOther.birt)
-                    if calcAge(childOneBirt, childOtherBirt) < 1 and calcAge(childOneBirt, childOtherBirt) != 0:
+                    if getDifference(childOneBirt, childOtherBirt)<242 and getDifference(childOneBirt, childOtherBirt)>0:
                         success = 0
-                        print("US13 Error with family     ", famid, ": Child birth distance not valid " + (childOther.name) )
+                        print("US13 Error with family     ", famid, ": Child birth space not valid, child ID:", s[i], s[j])
     
     #for childID in removedChildren:
         #fam.chil.discard(childID)
