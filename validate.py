@@ -580,7 +580,6 @@ def correspondingEntries(gc):
             for famID, fam in gc.families.items():
                 if famID == indi.famc:
                     for chilID in fam.chil:
-                        print(chilID)
                         if chilID == indiID:
                             coEntry = 1
                     if coEntry == 0:
@@ -607,7 +606,7 @@ def correspondingEntries(gc):
                             coEntry = 1
                     if coEntry == 0:
                         success = 0
-                        print("US026 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
+                        print("US26 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
         if fam.husb != None:
         # test existence of husb record in individual
             for indiID, indi in gc.individuals.items():
@@ -618,7 +617,7 @@ def correspondingEntries(gc):
                             coEntry = 1
                     if coEntry == 0:
                         success = 0
-                        print("US026 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
+                        print("US26 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
         if len(fam.chil)!=0:
         # test existence of child record in individual
             for chilID in fam.chil:
@@ -626,7 +625,7 @@ def correspondingEntries(gc):
                     if indiID == chilID:
                         if indi.famc == None:
                             success = 0
-                            print("US026 Error with individual:", famID, " Don't have corresponding child record in individual ", indiID)
+                            print("US26 Error with individual:", famID, " Don't have corresponding child record in individual ", indiID)
     if success == 0:
         return 0
     else:
