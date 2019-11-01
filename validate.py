@@ -528,7 +528,9 @@ def SiblingsShouldNotMarry(gc):
                 i = 0
                 while i<len(chillist):
                     chilID=chillist[i]
+                    ############################## BEGIN
                     chilset.remove(chilID)
+                    ############################## END
                     for id, family in gc.families.items():
                         if family.husb != None:
                             if family.wife != None:
@@ -539,7 +541,8 @@ def SiblingsShouldNotMarry(gc):
                                     if famset & chilset != set():
                                         print("US18 Error with family     ", id, ": Siblings marry one another")
                                         success = 0
-                    i += 1                    
+                    i += 1
+
     if success == 0:
         return 0
     else:
@@ -566,6 +569,69 @@ def roleGender(gc):
     else:
         return 1
 
+
+# US26
+def correspondingEntries(gc):
+    success = -1
+    for indiID, indi in gc.individuals.items():
+        # test existence of child record in family
+        if indi.famc != None:
+            coEntry = 0
+            for famID, fam in gc.families.items():
+                if famID == indi.famc:
+                    for chilID in fam.chil:
+                        print(chilID)
+                        if chilID == indiID:
+                            coEntry = 1
+                    if coEntry == 0:
+                        success = 0
+                        print("US26 Error with family     ", indiID,
+                              " Don't have corresponding child record in family ", famID)
+        if len(indi.fams) != 0:
+        # test existence of sponser record in family
+            for sponserID in indi.fams:
+                for famID, fam in gc.families.items():
+                    if famID == sponserID:
+                        if fam.wife != indiID and fam.husb != indiID:
+                            success = 0
+                            print("US26 Error with family     ", indiID, " Don't have corresponding sponser record in family ",famID)
+
+    for famID, fam in gc.families.items():
+        if fam.wife != None:
+        # test existence of wife record in individual
+            for indiID, indi in gc.individuals.items():
+                if indiID == fam.wife:
+                    coEntry = 0
+                    for sponserID in indi.fams:
+                        if sponserID == famID:
+                            coEntry = 1
+                    if coEntry == 0:
+                        success = 0
+                        print("US026 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
+        if fam.husb != None:
+        # test existence of husb record in individual
+            for indiID, indi in gc.individuals.items():
+                if indiID == fam.husb:
+                    coEntry = 0
+                    for sponserID in indi.fams:
+                        if sponserID == famID:
+                            coEntry = 1
+                    if coEntry == 0:
+                        success = 0
+                        print("US026 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
+        if len(fam.chil)!=0:
+        # test existence of child record in individual
+            for chilID in fam.chil:
+                for indiID, indi in gc.individuals.items():
+                    if indiID == chilID:
+                        if indi.famc == None:
+                            success = 0
+                            print("US026 Error with individual:", famID, " Don't have corresponding child record in individual ", indiID)
+    if success == 0:
+        return 0
+    else:
+        return 1
+
 def validate(gc):
   birtDeatB4CurrDate(gc)# US01
   marrDivB4CurrDate(gc)# US01
@@ -586,4 +652,5 @@ def validate(gc):
   NoMarriagesToDescendants(gc) # US17
   SiblingsShouldNotMarry(gc) # US18
   roleGender(gc) # US21
+  correspondingEntries(gc) # US26
 
