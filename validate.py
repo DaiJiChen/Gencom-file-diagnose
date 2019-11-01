@@ -522,7 +522,7 @@ def SiblingsShouldNotMarry(gc):
     success = -1
     for id , fam in gc.families.items():
         if fam.chil != None:
-            chilset = fam.chil
+            chilset = set() | fam.chil
             chillist = list(fam.chil)
             if len(chillist)>1:
                 i = 0
