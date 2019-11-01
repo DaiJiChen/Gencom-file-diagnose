@@ -251,11 +251,11 @@ def main(filename):
     gc = Gedcom(filename)
     gc.print_table()
     validate.validate(gc)
-    for x in gc.US41:
-        print(x)
     for x in gc.duplicateIndi:
         print(x)
     for x in gc.duplicateFam:
+        print(x)
+    for x in gc.US41:
         print(x)
     
 

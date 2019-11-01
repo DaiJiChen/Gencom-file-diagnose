@@ -74,9 +74,7 @@ def birtDeatB4CurrDate(gc):
                 remove = True
                 success = 0
         if remove:
-            removedIndividuals.append(id)     
-    for removeId in removedIndividuals:
-        gc.individuals.pop(removeId)
+            removedIndividuals.append(id)
 
     if success == 0:
         return 0
@@ -102,9 +100,7 @@ def marrDivB4CurrDate(gc):
                 remove = True
                 success = 0
         if remove:
-            removedFams.append(famid)     
-    for removeId in removedFams:
-        gc.families.pop(removeId)
+            removedFams.append(famid)
 
     if success == 0:
         return 0
@@ -297,14 +293,12 @@ def multiBirthLessThan5(gc):
 
 
 def validate(gc):
-  under150(gc)
-  marrAfter14(gc)
-  MarriageBeforeDeath(gc)
-  DivorceBeforeDeath(gc)
-  BirtBeforeMarr(gc) # US02
-  BirtBeforeDeat(gc) # US03
-  marrBeforeDiv(gc)
-  birtDeatB4CurrDate(gc) # US01
-  marrDivB4CurrDate(gc) # US01
-  siblingsFewerThan15(gc) # US14
-  multiBirthLessThan5(gc) # US15
+    birtDeatB4CurrDate(gc)  # US01
+    marrDivB4CurrDate(gc)  # US01
+    BirtBeforeMarr(gc)  # US02
+    BirtBeforeDeat(gc)  # US03
+    marrBeforeDiv(gc)  # US04
+    MarriageBeforeDeath(gc)  # US05
+    DivorceBeforeDeath(gc)  # US06
+    under150(gc)  # US07
+    marrAfter14(gc)  # US10
