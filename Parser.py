@@ -55,7 +55,7 @@ def calcAge(date1, date2=date.today()):
 
 class Gedcom:
     def __init__(self, filename):
-        self.US41 = []
+        self.US42 = []
         self.existedIndi = {}
         self.existedFam = {}
         self.duplicateIndi = []
@@ -180,7 +180,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with individual  "+ str(id)+ ": Birthday "+ str(indi.birt)+ " is illegitimate")
+                    self.US42.append("US42 Error with individual  "+ str(id)+ ": Birthday "+ str(indi.birt)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 indi.birt = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -189,7 +189,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with individual   " + str(id) + ": death date "+ str(indi.deat)+ " is illegitimate")
+                    self.US42.append("US42 Error with individual   " + str(id) + ": death date "+ str(indi.deat)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 indi.deat = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -199,7 +199,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with family      "+ str(id)+ ": divorce date " + str(fam.div)+ " is illegitimate")
+                    self.US42.append("US42 Error with family      "+ str(id)+ ": divorce date " + str(fam.div)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.div = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -208,7 +208,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US41.append("US41 Error with family      " + str(id)+ ": marriage date "+ str(fam.marr)+ " is illegitimate")
+                    self.US42.append("US42 Error with family      " + str(id)+ ": marriage date "+ str(fam.marr)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.marr = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -255,7 +255,7 @@ def main(filename):
         print(x)
     for x in gc.duplicateFam:
         print(x)
-    for x in gc.US41:
+    for x in gc.US42:
         print(x)
     
 
