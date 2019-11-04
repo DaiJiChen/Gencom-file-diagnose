@@ -528,9 +528,7 @@ def SiblingsShouldNotMarry(gc):
                 i = 0
                 while i<len(chillist):
                     chilID=chillist[i]
-                    ############################## BEGIN
                     chilset.remove(chilID)
-                    ############################## END
                     for id, family in gc.families.items():
                         if family.husb != None:
                             if family.wife != None:
@@ -547,7 +545,95 @@ def SiblingsShouldNotMarry(gc):
         return 0
     else:
         return 1                                   
-            
+
+#US19 
+def FirstCousinsShouldNotMarry(gc):
+    success = -1
+    for id,fam_first in gc.families.items():
+        allthird = set()
+        if fam_first.chil != None:
+            chil_firstlist = list(fam_first.chil)
+            if len(chil_firstlist)>1:
+                i = 0
+                while i<len(chil_firstlist):
+                    chil_firstID = chil_firstlist[i]
+                    chil_secondset = set()
+                    for id, family_second in gc.families.items():
+                        if chil_firstID == family_second.husb or chil_firstID == family_second.wife:
+                            chil_secondset = chil_secondset | family_second.chil
+                    allthird = allthird | chil_secondset
+                    i += 1
+        if fam_first.chil != None:
+            chil_firstlist = list(fam_first.chil)
+            if len(chil_firstlist)>1:
+                i = 0
+                while i<len(chil_firstlist):
+                    chil_firstID = chil_firstlist[i]
+                    chil_secondset = set()
+                    for id, family_second in gc.families.items():
+                        if chil_firstID == family_second.husb or chil_firstID == family_second.wife:
+                            chil_secondset = chil_secondset | family_second.chil
+                    allthird = allthird - chil_secondset
+                    chil_secondlist = list(chil_secondset)
+                    j=0
+                    while j<len(chil_secondlist):
+                        chil_secondID = chil_secondlist[j]
+                        for id, family_third in gc.families.items():
+                            if family_third.husb != None and family_third.wife != None:
+                                if chil_secondID == family_third.husb or chil_secondID == family_third.wife:
+                                    fam_thirdset = set()
+                                    fam_thirdset.add(family_third.husb)
+                                    fam_thirdset.add(family_third.wife)
+                                    fam_thirdset.remove(chil_secondID)
+                                    if fam_thirdset & allthird != set():
+                                        print("US19 Error with family     ", id, ": First cousins should not marry one another")
+                                        success = 0    
+                        j +=1 
+                    i += 1        
+    if success == 0:
+        return 0
+    else:
+        return 1
+
+
+#US20
+def AuntsAndUnclesNotMarryNiecesNephews(gc):
+    success = -1
+    for id,fam_first in gc.families.items():
+        if fam_first.chil != None:
+            chil_firstlist = list(fam_first.chil)
+            if len(chil_firstlist)>1:
+                i = 0
+                while i<len(chil_firstlist):
+                    chil_firstID = chil_firstlist[i]
+                    chil_firstset = set() | fam_first.chil
+                    chil_firstset.remove(chil_firstID)
+                    chil_secondset = set()
+                    for id, family_second in gc.families.items():
+                        if chil_firstID == family_second.husb or chil_firstID == family_second.wife:
+                            chil_secondset = chil_secondset | family_second.chil
+                    chil_secondlist = list(chil_secondset)
+                    j = 0
+                    while j<len(chil_secondlist):
+                        chil_secondID = chil_secondlist[j]
+                        for id, family_third in gc.families.items():
+                            if family_third.husb != None and family_third.wife != None:
+                                if chil_secondID == family_third.husb or chil_secondID == family_third.wife:
+                                    fam_thirdset = set()
+                                    fam_thirdset.add(family_third.husb)
+                                    fam_thirdset.add(family_third.wife)
+                                    fam_thirdset.remove(chil_secondID)
+                                    if fam_thirdset & chil_firstset != set():
+                                        print("US20 Error with family     ", id, ": Aunts and uncles should not marry their nieces or nephews")
+                                        success = 0
+                        j += 1
+                    i += 1    
+    if success == 0:
+        return 0
+    else:
+        return 1    
+    
+    
 #US21
 def roleGender(gc):
     success = -1
@@ -650,6 +736,8 @@ def validate(gc):
   maleLastNames(gc) # US16
   NoMarriagesToDescendants(gc) # US17
   SiblingsShouldNotMarry(gc) # US18
+  FirstCousinsShouldNotMarry(gc) # US19
+  AuntsAndUnclesNotMarryNiecesNephews(gc) # US20
   roleGender(gc) # US21
   correspondingEntries(gc) # US26
 
