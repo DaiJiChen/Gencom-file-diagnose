@@ -71,8 +71,8 @@ class Gedcom:
         self.analyse(filename)
 
     #analyse GEDCOM file line by line, and store data into two dictionarries.
-    def analyse(self, prgmArgs):
-        lines = open(prgmArgs[0], 'r')
+    def analyse(self, filename):
+        lines = open(filename, 'r')
         indi = ""
         fam = ""
         plevel = ""  # DATE will use the previous line.
@@ -173,6 +173,12 @@ class Gedcom:
                 self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, None, fam.chil])
         print(self.fam_table)
 
+    def displayOutput(self,flags):
+        if not flags:
+            self.print_table()
+        for flag in flags:
+            if flag == "print": print_table(self)
+        
     def illDate(self):
         for id, indi in self.individuals.items():
             if indi.birt != None:
@@ -247,9 +253,9 @@ class Individual:
 
 
 
-def main(filename):
+def main(filename, flags):
     gc = Gedcom(filename)
-    gc.print_table()
+    gc.displayOutput(flags)
     validate.validate(gc)
     for x in gc.duplicateIndi:
         print(x)
@@ -259,5 +265,9 @@ def main(filename):
         print(x)
 
 if __name__ == "__main__" :
-    main(sys.argv[1:])
-    
+        if len(sys.argv) == 2:
+            main(sys.argv[1],[])
+        elif len(sys.argv) > 2:
+            main(sys.argv[1],sys.argv[2:])
+        else:
+            print("ERROR: Must provide a gedcom filename")
