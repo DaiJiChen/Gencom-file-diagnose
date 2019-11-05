@@ -150,7 +150,7 @@ class Gedcom:
                                 self.families[fam].div = args
             plevel = level
             ptag = tag
-        self.illDate()
+        self.illDate() # US41
         for indi in self.individuals.values():
             indi.calcuAge()
 
@@ -163,22 +163,53 @@ class Gedcom:
 
         print("Family Table")
         for ID, fam in self.families.items():
+            # US28 orderSiblingsByAge
+            chil = []
+            for indi in fam.chil:
+                chil.append(indi)
+            if len(fam.chil) > 1:
+                for i in range(len(chil)-1):
+                    for j in range(i+1, len(chil)):
+                        if self.individuals[chil[i]].age < self.individuals[chil[j]].age:
+                            chil[i], chil[j] = chil[j], chil[i]
+
             if fam.husb != None and fam.wife != None:
-                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, self.individuals[fam.wife].name, fam.chil])
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, self.individuals[fam.wife].name, chil])
             elif fam.husb == None and fam.wife == None:
-                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, None, fam.chil])
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, None, chil])
             elif fam.husb == None and fam.wife != None:
-                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, self.individuals[fam.wife].name, fam.chil])
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, None, fam.wife, self.individuals[fam.wife].name, chil])
             elif fam.husb != None and fam.wife == None:
-                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, None, fam.chil])
+                self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, None, chil])
         print(self.fam_table)
+
+    # US29: list all deceased individuals outside the prettytable
+    def list_deceased(self):
+        print("\nUS29 ---------------- list all deceased individuals -----------------")
+        for indiID, indi in self.individuals.items():
+            if indi.deat != None:
+                print("Individual " + indiID + "(" + indi.name + ") : Died in", indi.deat, "at the age of", str(indi.age) + ".")
+
+    # US30: list all living married people outside the prettytable
+    def list_livingMarriage(self):
+        print("\nUS30 ---------------- list all living married people ----------------")
+        for indiID, indi in self.individuals.items():
+            if(indi.deat == None):
+                married = 0
+                for famID, fam in self.families.items():
+                    if fam.husb == indiID or fam.wife == indiID:
+                        married = 1
+                if married == 0:
+                    print("Individual", indiID, "is alive and is not married")
 
     def displayOutput(self,flags):
         if not flags:
             self.print_table()
         for flag in flags:
-            if flag == "print": print_table(self)
-        
+            if flag == "print": self.print_table()
+            if flag == "US29": self.list_deceased()
+            if flag == "US30": self.list_livingMarriage()
+
     def illDate(self):
         for id, indi in self.individuals.items():
             if indi.birt != None:
@@ -256,6 +287,7 @@ class Individual:
 def main(filename, flags):
     gc = Gedcom(filename)
     gc.displayOutput(flags)
+    print("\n\n\n========================= Error informations ==========================\n")
     validate.validate(gc)
     for x in gc.duplicateIndi:
         print(x)
