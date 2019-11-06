@@ -655,6 +655,64 @@ def roleGender(gc):
     else:
         return 1
 
+# US24
+def uniFamBySpouse(gc):
+    invalid = -1
+    for id1, fam1 in gc.families.items():
+        famID1 = id1
+        if fam1.husb != None and fam1.wife != None and fam1.marr != None:
+            husb1 = fam1.husb
+            wife1 = fam1.wife
+            marr1 = fam1.marr
+            for id2, fam2 in gc.families.items():
+                famID2 = id2
+                if fam2.husb != None and fam2.wife != None and fam2.marr != None:
+                    husb2 = fam2.husb
+                    wife2 = fam2.wife
+                    marr2 = fam2.marr
+                    if famID1 != famID2:
+                        if husb1 == husb2 and wife1 == wife2 and marr1 == marr2:
+                            invalid = 0
+                            print("US24 Error with family     ", id1, "and", id2, "has the same husband, same wife and same marriage date")
+    if invalid == 0:
+        return 0
+    else:
+        return 1
+
+# US25
+def uniFirstNameFam(gc):
+    invalid = -1
+    for ID, fam in gc.families.items():
+        chil = []
+        for indi in fam.chil:
+            chil.append(indi)
+        if len(fam.chil) > 1:
+            for i in range(len(chil) - 1):
+                for j in range(i + 1, len(chil)):
+                    if gc.individuals[chil[i]].birt == gc.individuals[chil[j]].birt and gc.individuals[chil[i]].name == gc.individuals[chil[j]].name:
+                        print("US25 Error with family     ", ID, "has children with same name and same birthday.")
+                        invalid = 0
+    #for famID, fam in gc.families.items():
+        #if fam.chil != None and len(fam.chil) != 0:
+            #childName = set()
+            #for child in fam.chil:
+                #for indiID, indi in gc.individuals.items():
+                    #if child == indiID and indi.name != None:
+                        #childName.add(indi.name)
+            #if len(fam.chil) != len(childName):
+                #print("US24 Error with family     ", famID , "has children with same name and same birthday.")
+                #invalid = 0
+    if invalid == 0:
+        return 0
+    else:
+        return 1
+
+# print US22
+def print_US22(gc):
+    for x in gc.duplicateIndi:
+        print(x)
+    for x in gc.duplicateFam:
+        print(x)
 
 # US26
 def correspondingEntries(gc):
@@ -717,6 +775,11 @@ def correspondingEntries(gc):
     else:
         return 1
 
+# US42
+def print_US42(gc):
+    for x in gc.US42: # US42
+        print(x)
+
 def validate(gc):
   birtDeatB4CurrDate(gc)# US01
   marrDivB4CurrDate(gc)# US01
@@ -729,6 +792,7 @@ def validate(gc):
   birthB4ParentMarr(gc) # US08
   birthB4ParentDeath(gc) # US09
   marrAfter14(gc) # US10
+
   parrTooOld(gc)# US12
   siblingSpace(gc)# US13
   siblingsFewerThan15(gc) # US14
@@ -739,5 +803,12 @@ def validate(gc):
   FirstCousinsShouldNotMarry(gc) # US19
   AuntsAndUnclesNotMarryNiecesNephews(gc) # US20
   roleGender(gc) # US21
+  print_US22(gc) # US22
+
+  uniFamBySpouse(gc) # US24
+  uniFirstNameFam(gc) # US25
   correspondingEntries(gc) # US26
+  # US27--US40 is written in Parser
+  print_US42(gc) # US42
+
 

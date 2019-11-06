@@ -5,11 +5,11 @@ import validate
 class TestUS03(unittest.TestCase):
     # A successful case
     def test_US03(self):
-        gc = Parser.Gedcom(["gedcomfile.ged"])
+        gc = Parser.Gedcom("gedcomfile.ged")
         self.assertEqual(validate.BirtBeforeDeat(gc), 1)
     # A failure case
     def test_US03(self):
-        gc = Parser.Gedcom(["bad_gedcomfile.ged"])
+        gc = Parser.Gedcom("bad_gedcomfile.ged")
         self.assertEqual(validate.BirtBeforeDeat(gc), 0)
 
 

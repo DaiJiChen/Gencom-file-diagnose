@@ -56,6 +56,7 @@ def calcAge(date1, date2=date.today()):
 
 class Gedcom:
     def __init__(self, filename):
+        self.US28 = 1
         self.US42 = []
         self.existedIndi = {}
         self.existedFam = {}
@@ -184,6 +185,18 @@ class Gedcom:
                 self.fam_table.add_row([ID, fam.marr, fam.div, fam.husb, self.individuals[fam.husb].name, fam.wife, None, chil])
         print(self.fam_table)
 
+        # test US28
+        for ID, fam in self.families.items():
+            chil = []
+            for indi in fam.chil:
+                chil.append(indi)
+            if len(fam.chil) > 1:
+                for i in range(len(chil) - 1):
+                    for j in range(i + 1, len(chil)):
+                        if self.individuals[chil[i]].age < self.individuals[chil[j]].age:
+                            self.US28 = 0
+
+
     # US29: list all deceased individuals outside the prettytable
     def list_deceased(self):
         print("\nUS29 ---------------- list all deceased individuals -----------------")
@@ -211,6 +224,7 @@ class Gedcom:
             if flag == "US29": self.list_deceased()
             if flag == "US30": self.list_livingMarriage()
 
+        return 1
           
     def illDate(self):
         for id, indi in self.individuals.items():
@@ -253,25 +267,25 @@ class Gedcom:
                 
                 
     #US29 List deceased
-    def deceasedIndividuals(self):
-        deceasedIndividuals= []
-        for id, indi in self.individuals.items():    
-            if indi.deat != None:
-                deceasedIndividuals.append(id)          
-        print("Deceased individuals: " + str(deceasedIndividuals))
+    #def deceasedIndividuals(self):
+        #deceasedIndividuals= []
+        #for id, indi in self.individuals.items():
+            #if indi.deat != None:
+                #deceasedIndividuals.append(id)
+        #print("Deceased individuals: " + str(deceasedIndividuals))
         
     # US28 Order siblings by age
-    def siblingsByAge(self):
-        for famid, fam in self.families.items():
-            if fam.chil != None:
-                childOrder = dict()
-                children = fam.chil
-                for childId in children:
-                    childBirt = makeDate(self.individuals[childId].birt)
-                    childAge = calcAge(childBirt)
-                    childOrder[childId] = childAge 
-                childOrder = sorted(childOrder.items(),key=itemgetter(1), reverse=True)
-                print("Ordered siblings in family ", famid, " are : ", childOrder)
+    #def siblingsByAge(self):
+        #for famid, fam in self.families.items():
+            #if fam.chil != None:
+                #childOrder = dict()
+                #children = fam.chil
+                #for childId in children:
+                    #childBirt = makeDate(self.individuals[childId].birt)
+                    #childAge = calcAge(childBirt)
+                    #childOrder[childId] = childAge
+                #childOrder = sorted(childOrder.items(),key=itemgetter(1), reverse=True)
+                #print("Ordered siblings in family ", famid, " are : ", childOrder)
 
                 
                 
@@ -313,12 +327,7 @@ def main(filename, flags):
     gc.displayOutput(flags)
     print("\n\n\n========================= Error informations ==========================\n")
     validate.validate(gc)
-    for x in gc.duplicateIndi:
-        print(x)
-    for x in gc.duplicateFam:
-        print(x)
-    for x in gc.US42:
-        print(x)
+
 
 if __name__ == "__main__" :
         if len(sys.argv) == 2:
