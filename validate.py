@@ -655,6 +655,22 @@ def roleGender(gc):
     else:
         return 1
 
+#US23
+def uniqueNameBirth(gc):
+    success = -1
+    pairs = {}
+    for id, indi in gc.individuals.items():
+        for indiID, individual in gc.individuals.items():
+            if id != indiID and indiID > id:
+                if indi.name == individual.name and indi.birt == individual.birt:
+                    success = 0
+                    print("US23 Error with individuals ", id," and ", indiID,": Individuals cannot share a name and birth date")
+    
+    if success == 0:
+        return 0
+    else:
+        return 1    
+
 # US24
 def uniFamBySpouse(gc):
     invalid = -1
@@ -804,7 +820,7 @@ def validate(gc):
   AuntsAndUnclesNotMarryNiecesNephews(gc) # US20
   roleGender(gc) # US21
   print_US22(gc) # US22
-
+  uniqueNameBirth(gc) # US23
   uniFamBySpouse(gc) # US24
   uniFirstNameFam(gc) # US25
   correspondingEntries(gc) # US26
