@@ -6,6 +6,7 @@ from datetime import date
 import os
 import validate
 import sys
+from operator import itemgetter
 
 months = {
     "JAN":1,
@@ -210,6 +211,7 @@ class Gedcom:
             if flag == "US29": self.list_deceased()
             if flag == "US30": self.list_livingMarriage()
 
+          
     def illDate(self):
         for id, indi in self.individuals.items():
             if indi.birt != None:
@@ -248,9 +250,31 @@ class Gedcom:
                     self.US42.append("US42 Error with family      " + str(id)+ ": marriage date "+ str(fam.marr)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.marr = temp[0] + " " + temp[1] + " " + temp[2]
+                
+                
+    #US29 List deceased
+    def deceasedIndividuals(self):
+        deceasedIndividuals= []
+        for id, indi in self.individuals.items():    
+            if indi.deat != None:
+                deceasedIndividuals.append(id)          
+        print("Deceased individuals: " + str(deceasedIndividuals))
+        
+    # US28 Order siblings by age
+    def siblingsByAge(self):
+        for famid, fam in self.families.items():
+            if fam.chil != None:
+                childOrder = dict()
+                children = fam.chil
+                for childId in children:
+                    childBirt = makeDate(self.individuals[childId].birt)
+                    childAge = calcAge(childBirt)
+                    childOrder[childId] = childAge 
+                childOrder = sorted(childOrder.items(),key=itemgetter(1), reverse=True)
+                print("Ordered siblings in family ", famid, " are : ", childOrder)
 
-
-
+                
+                
 ############################################ define Individual and Family ################################################################
 class Family:
     def __init__(self):
