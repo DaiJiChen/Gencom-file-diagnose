@@ -53,6 +53,17 @@ def makeDate(GEDDate):
 def calcAge(date1, date2=date.today()):
     return date2.year - date1.year - ((date2.month, date2.day) < (date1.month, date1.day))
 
+# This function returns number of days between two given dates
+def getDifference(dt1, dt2= date.today()):
+    n1 = dt1.year * 365 + dt1.day
+    for i in range(0, dt1.month - 1):
+        n1 += days[i+1]
+    #n1 += countLeapYears(dt1)
+    n2 = dt2.year * 365 + dt2.day
+    for i in range(0, dt2.month - 1):
+        n2 += days[i+1]
+    #n2 += countLeapYears(dt2)
+    return (n2 - n1)
 
 class Gedcom:
     def __init__(self, filename):
@@ -216,6 +227,19 @@ class Gedcom:
                 if married == 0:
                     print("Individual", indiID, "is alive and is not married")
 
+    # US39: List all living couples whose marriage anniversaries occur in the next 30 days
+    def list_upcoming_anniversaries(self):
+        print("\nUS39 ---------------- List upcoming anniversaries ----------------")
+        for famID, fam in self.families.items():
+            haveAnniversary = 0
+            if fam.marr != None and (fam.husb == None or self.individuals[fam.husb].alive)  and (fam.husb == None or self.individuals[fam.wife].alive):
+                if getDifference(makeDate(fam.marr)) < 30 and getDifference(makeDate(fam.marr)) > -30:
+                    print("The anniversary of "+str(famID)+" is coming.")
+                    haveAnniversary = 1
+        if haveAnniversary == 0:
+            print("There are no upcoming anniversaries for living couples.")
+
+
     def displayOutput(self,flags):
         if not flags:
             self.print_table()
@@ -223,6 +247,7 @@ class Gedcom:
             if flag == "print": self.print_table()
             if flag == "US29": self.list_deceased()
             if flag == "US30": self.list_livingMarriage()
+            if flag == "US39": self.list_upcoming_anniversaries()
 
         return 1
           

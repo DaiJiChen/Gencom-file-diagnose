@@ -57,21 +57,14 @@ def countLeapYears(d):
 
 # This function returns number of days between two given dates
 def getDifference(dt1, dt2):
-    # COUNT TOTAL NUMBER OF DAYS BEFORE FIRST DATE 'dt1'
-    # initialize count using years and day
     n1 = dt1.year * 365 + dt1.day
-    # Add days for months in given date
     for i in range(0, dt1.month - 1):
         n1 += days[i+1]
-    # Since every leap year is of 366 days,
-    # Add a day for every leap year
-    n1 += countLeapYears(dt1)
-    # SIMILARLY, COUNT TOTAL NUMBER OF DAYS BEFORE 'dt2'
+    #n1 += countLeapYears(dt1)
     n2 = dt2.year * 365 + dt2.day
     for i in range(0, dt2.month - 1):
         n2 += days[i+1]
-    n2 += countLeapYears(dt2)
-    # return difference between two counts
+    #n2 += countLeapYears(dt2)
     return (n2 - n1)
 
 
@@ -333,7 +326,33 @@ def marrAfter14(gc):
         return 0
     else:
         return 1
-    
+
+# US11
+def noBigamy(gc):
+    success = -1
+    for indiID, indi in gc.individuals.items():
+        if len(indi.fams) > 1:
+            famIDs = []
+            for familyID in indi.fams:
+                famIDs.append(familyID)
+            for i in range(len(famIDs)-1):
+                for j in range(i + 1, len(famIDs)):
+                    if gc.families[famIDs[j]].marr != None and gc.families[famIDs[i]].marr != None:
+                        marrDate1 = gc.families[famIDs[i]].marr
+                        marrDate2 = gc.families[famIDs[j]].marr
+                        if marrDate1 <= marrDate2:
+                            if gc.families[famIDs[i]].div == None or gc.families[famIDs[i]].div > marrDate2:
+                                success = 0
+                                print("US11 Error with individual:", indiID, "is bigamy (", famIDs[i], famIDs[j], ")")
+                        elif marrDate1 > marrDate2:
+                            if gc.families[famIDs[j]].div == None or gc.families[famIDs[j]].div > marrDate2:
+                                success = 0
+                                print("US11 Error with individual:", indiID, "is bigamy (", famIDs[i], famIDs[j], ")")
+    if success == 0:
+        return 0
+    else:
+        return 1
+
 # US12 Parents not too old    Mother should be less than 60 years older than her children and father should be less than 
 # 80 years older than his children
 def parrTooOld(gc):
@@ -808,7 +827,7 @@ def validate(gc):
   birthB4ParentMarr(gc) # US08
   birthB4ParentDeath(gc) # US09
   marrAfter14(gc) # US10
-
+  noBigamy(gc) # US11
   parrTooOld(gc)# US12
   siblingSpace(gc)# US13
   siblingsFewerThan15(gc) # US14
