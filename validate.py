@@ -43,17 +43,14 @@ def makeDate(GEDDate):
 
 # calculates the number of years from date1 to date2 if date2 is supplied, years since date1 if not
 
-
 def calcAge(date1, date2=date.today()):
     return date2.year - date1.year - ((date2.month, date2.day) < (date1.month, date1.day))
-
 
 def countLeapYears(d):
     years = d.year
     if (d.month <= 2):
         years -= 1
     return int(years / 4 - years / 100 + years / 400)
-
 
 # This function returns number of days between two given dates
 def getDifference(dt1, dt2):
@@ -67,19 +64,6 @@ def getDifference(dt1, dt2):
     #n2 += countLeapYears(dt2)
     return (n2 - n1)
 
-
-# define testing functions here
-# each testing function should take in an entire Gedcom and iterate over the individuals/families
-# it will remove any entries that fail its test and print a message identifying the individual/family id
-# ex.
-# def birth_before_death(gc):
-#   for indiv in gc.individuals:
-#     if fail:
-#       print failure message
-
-
-
-
 # US01_1
 def birtDeatB4CurrDate(gc):
     removedIndividuals = []
@@ -88,12 +72,12 @@ def birtDeatB4CurrDate(gc):
         if indi.birt != None:
             if calcAge(makeDate(indi.birt)) < 0:
                 print("US01 Error with individual ", id,
-                      ": Birth is after current date.")
+                      "(line "+ str(indi.birtLine) + "): Birth is after current date.")
                 remove = True
         if indi.deat != None:
             if calcAge(makeDate(indi.deat)) < 0:
                 print("US01 Error with individual ", id,
-                      ": Death is after current date.")
+                      "(line "+ str(indi.deatLine) + "): Death is after current date.")
                 remove = True
 
     if remove == 0:
@@ -110,13 +94,13 @@ def marrDivB4CurrDate(gc):
             marrdate = makeDate(fam.marr)
             if calcAge(marrdate) < 0:
                 print("US01 Error with family     ", famid,
-                      ": Marriage is after current date.")
+                      "(line "+ str(fam.marrLine) + "): Marriage is after current date.")
                 remove = True
         if fam.div != None:
             divdate = makeDate(fam.div)
             if calcAge(divdate) < 0:
                 print("US01 Error with family     ", famid,
-                      ": Divorce is after current date.")
+                      "(line "+ str(fam.divLine) + "): Divorce is after current date.")
                 remove = True
 
     if remove == 0:
@@ -136,14 +120,14 @@ def BirtBeforeMarr(gc):
                 husb = gc.individuals[fam.husb]
                 husbbirt = makeDate(husb.birt)
                 if calcAge(husbbirt, marrdate) < 0:
-                    print("US02 Erroe with individual ", id, ": Individual ", husb.name, " was born", husb.birt,
+                    print("US02 Erroe with individual ", id, "(line "+ str(husb.birtLine) , str(fam.marrLine)+ "): Individual ", husb.name, " was born", husb.birt,
                           " before marriage date ", fam.marr)
                     success = 0
             if fam.wife != None:
                 wife = gc.individuals[fam.wife]
                 wifebirt = makeDate(wife.birt)
                 if calcAge(wifebirt, marrdate) < 0:
-                    print("US02 Erroe with individual ", id, ": Individual ", wife.name, " was born", wife.birt,
+                    print("US02 Erroe with individual ", id, "(line "+ str(wife.birtLine) , str(fam.marrLine)+ "): Individual ", wife.name, " was born", wife.birt,
                           " before marriage date ", fam.marr)
                     success = 0
 
@@ -152,14 +136,13 @@ def BirtBeforeMarr(gc):
     else:
         return 1
 
-
 # US03
 def BirtBeforeDeat(gc):
     success = -1
     for id, indi in gc.individuals.items():
         if indi.deat != None:
             if indi.age < 0:
-                print("US03 Error with individual ", id, ": Birth",
+                print("US03 Error with individual ", id, "(line "+ str(indi.birtLine), str(indi.deatLine) + "): Birth",
                       indi.birt, " before death", indi.deat)
                 success = 0
     if success == 0:
@@ -168,10 +151,6 @@ def BirtBeforeDeat(gc):
         return 1
 
 # US04 marriage before divorce
-# divBeforeMarr() takes the entire Gedcom file as argument and iterate over all individual and family records.
-# It prints a message displaying the family id.
-
-
 def marrBeforeDiv(gc):
     invalid = -1
     for id, fam in gc.families.items():
@@ -180,20 +159,19 @@ def marrBeforeDiv(gc):
             marrDate = makeDate(fam.marr)
             if calcAge(marrDate, divDate) < 0:
                 print("US04 Error with family     ", id +
-                      " : family has marriage date after divorce date")
+                      " (line "+ str(fam.marrLine),str(fam.divLine) + "): family has marriage date after divorce date")
                 invalid = 0
     if invalid == 0:
         return 0
     else:
         return 1
 
-
 # get death date from individuals
-def getDeathDate(gc, i):
-    for id, indi in gc.individuals.items():
-        if i == id:
-            if indi.deat != None:
-                return indi.deat
+#def getDeathDate(gc, i):
+#    for id, indi in gc.individuals.items():
+#        if i == id:
+#            if indi.deat != None:
+#                return indi.deat
 
 
 # User Story 05
@@ -201,50 +179,56 @@ def MarriageBeforeDeath(gc):
     success = -1
     for id, fam in gc.families.items():
         if(fam.marr != None):
-            if(getDeathDate(gc, fam.husb) != None):
-                if(calcAge(makeDate(fam.marr), makeDate(getDeathDate(gc, fam.husb))) < 0):
-                    print("US05 Error with individual ", id +
-                          ": family have marriage dates after death dates")
-                    success = 0
-            if(getDeathDate(gc, fam.wife) != None):
-                if(calcAge(makeDate(fam.marr), makeDate(getDeathDate(gc, fam.wife))) < 0):
-                    print("US05 Error with individual ", id +
-                          ": family have marriage dates after death dates")
-                    success = 0
+            if(fam.husb!= None):
+                if(gc.individuals[fam.husb].deat != None):
+                    if(calcAge(makeDate(fam.marr), makeDate(gc.individuals[fam.husb].deat)) < 0):
+                        print("US05 Error with individual ", id +
+                              "(line "+ str(fam.marrLine),str(gc.individuals[fam.husb].deatLine) + "): family have marriage dates after death dates")
+                        success = 0
+            if(fam.wife != None):
+                if(gc.individuals[fam.wife].deat != None):
+                    if(calcAge(makeDate(fam.marr), makeDate(gc.individuals[fam.wife].deat)) < 0):
+                        print("US05 Error with individual ", id +
+                              "(line "+ str(fam.marrLine),str(gc.individuals[fam.wife].deatLine) + "): family have marriage dates after death dates")
+                        success = 0
     if success == 0:
         return 0
     else:
         return 1
-
 
 # User Story 06
 def DivorceBeforeDeath(gc):
     success = -1
     for id, fam in gc.families.items():
         if(fam.div != None):
-            if(getDeathDate(gc, fam.husb) != None):
-                if(calcAge(makeDate(fam.div), makeDate(getDeathDate(gc, fam.husb))) < 0):
-                    print("US06 Error with individual ", id +
-                          ": family have div dates after death dates")
-                    success = 0
-            if(getDeathDate(gc, fam.wife) != None):
-                if(calcAge(makeDate(fam.div), makeDate(getDeathDate(gc, fam.wife))) < 0):
-                    print("US06 Error with individual ", id +
-                          ": family have div dates after death dates")
-                    success = 0
+            if (fam.husb != None):
+                if(gc.individuals[fam.husb].deat != None):
+                    if(calcAge(makeDate(fam.div), makeDate(gc.individuals[fam.husb].deat)) < 0):
+                        print("US06 Error with individual ", id +
+                              " (line "+ str(fam.divLine),str(gc.individuals[fam.husb].deatLine) + "): family have div dates after death dates")
+                        success = 0
+            if(fam.wife != None):
+                if(gc.individuals[fam.wife].deat != None):
+                    if(calcAge(makeDate(fam.div), makeDate(gc.individuals[fam.wife].deat)) < 0):
+                        print("US06 Error with individual ", id +
+                              " (line "+ str(fam.divLine),str(gc.individuals[fam.wife].deatLine) + "): family have div dates after death dates")
+                        success = 0
     if success == 0:
         return 0
     else:
         return 1
-
 
 # US07
 def under150(gc):
     success = -1
     for id, indi in gc.individuals.items():
         if indi.age >= 150:
-            print("US07 Error with individual ",
-                  id, ": Age is not less than 150")
+            if indi.deat != None:
+                print("US07 Error with individual ",
+                      id, "(line "+ str(indi.birtLine),str(indi.deatLine) + "): Age is not less than 150")
+            else:
+                print("US07 Error with individual ",
+                      id, "(line " + str(indi.birtLine) + "): Age is not less than 150")
             success = 0
     if success == 0:
         return 0
@@ -265,7 +249,7 @@ def birthB4ParentMarr(gc):
                         marrDate = makeDate(fam.marr)
                         #print("indi:", indiID, "birth:", indi.birt, "fam:", famID, "marr:", fam.marr)
                         if calcAge(indiBirthDate, marrDate) > 0:
-                            print("US08 Error with individual:", indiID, indi.name, "was born", indi.birt,
+                            print("US08 Error with individual ", indiID, "(line "+ str(indi.birtLine),str(fam.marrLine) + "): " + indi.name + "was born", indi.birt,
                                   "before parents' marriage date", fam.marr)
                             invalid = 0
     if invalid == 0:
@@ -288,14 +272,14 @@ def birthB4ParentDeath(gc):
                         if husb.deat != None:
                             patDeathDate = makeDate(husb.deat)
                             if calcAge(indiBirthDate, patDeathDate) < 0:
-                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after father's death date ", husb.deat)
+                                print("US09 Error with individual ",indiID+" (line "+ str(indi.birtLine),str(husb.deatLine) + "):", indi.name, "was born", indi.birt, "after father's death date ", husb.deat)
                                 invalid = 0
                     if fam.wife != None:
                         wife = gc.individuals[fam.wife]
                         if wife.deat != None:
                             matDeathDate = makeDate(wife.deat)
                             if calcAge(indiBirthDate, matDeathDate) < 0:
-                                print("US09 Error with individual:", indiID, indi.name, "was born", indi.birt, "after mother's death date ", wife.deat)
+                                print("US09 Error with individual ",indiID+" (line "+ str(indi.birtLine),str(wife.deatLine) + "):", indi.name, "was born", indi.birt, "after mother's death date ", wife.deat)
                                 invalid = 0
     if invalid == 0:
         return 0
@@ -313,14 +297,14 @@ def marrAfter14(gc):
                 husb = gc.individuals[fam.husb]
                 husbbirt = makeDate(husb.birt)
                 if calcAge(husbbirt, marrdate) < 14:
-                    print("US10 Error with family     ", id, ": Individual ", husb.name, " was not at least 14 at time of marriage")
+                    print("US10 Error with family     ", id, "(line "+ str(husb.birtLine),str(fam.marrLine) + "): Individual ", husb.name, " was not at least 14 at time of marriage")
                     success = 0
 
             if fam.wife != None:
                 wife = gc.individuals[fam.wife]
                 wifebirt = makeDate(wife.birt)
                 if calcAge(wifebirt, marrdate) < 14:
-                    print("US10 Error with family     ", id, ": Individual ", wife.name, " was not at least 14 at time of marriage")
+                    print("US10 Error with family     ", id, "(line "+ str(wife.birtLine),str(fam.marrLine) + "): Individual ", wife.name, " was not at least 14 at time of marriage")
                     success = 0
     if success == 0:
         return 0
@@ -340,14 +324,16 @@ def noBigamy(gc):
                     if gc.families[famIDs[j]].marr != None and gc.families[famIDs[i]].marr != None:
                         marrDate1 = gc.families[famIDs[i]].marr
                         marrDate2 = gc.families[famIDs[j]].marr
-                        if marrDate1 <= marrDate2:
-                            if gc.families[famIDs[i]].div == None or gc.families[famIDs[i]].div > marrDate2:
+
+                        if calcAge(makeDate(marrDate1), makeDate(marrDate2)) >= 0:
+                            if gc.families[famIDs[i]].div == None or calcAge(makeDate(gc.families[famIDs[i]].div),makeDate(marrDate2))<0:
                                 success = 0
-                                print("US11 Error with individual:", indiID, "is bigamy (", famIDs[i], famIDs[j], ")")
-                        elif marrDate1 > marrDate2:
-                            if gc.families[famIDs[j]].div == None or gc.families[famIDs[j]].div > marrDate2:
+                                print("US11 Error with individual ",indiID,"(line "+str(gc.families[famIDs[i]].marrLine), str(gc.families[famIDs[j]].marrLine)+"):",  "is bigamy (", famIDs[i], famIDs[j], ")")
+
+                        elif calcAge(makeDate(marrDate1), makeDate(marrDate2)) < 0:
+                            if gc.families[famIDs[j]].div == None or calcAge(makeDate(gc.families[famIDs[j]].div),makeDate(marrDate1))<0:
                                 success = 0
-                                print("US11 Error with individual:", indiID, "is bigamy (", famIDs[i], famIDs[j], ")")
+                                print("US11 Error with individual ",indiID,"(line "+str(gc.families[famIDs[i]].marrLine), str(gc.families[famIDs[j]].marrLine)+"):",  "is bigamy (", famIDs[i], famIDs[j], ")")
     if success == 0:
         return 0
     else:
@@ -371,7 +357,7 @@ def parrTooOld(gc):
                     if calcAge(motherBirt, childBirt) > 60:
                         removedChildren.append(childId)
                         success = 0
-                        print("US12 Error with family     ", famid, ": Mother is 60 years older than her child " + (childM.name) )
+                        print("US12 Error with family     ", famid, "(line "+str(mother.birtLine), str(childM.birtLine)+"): Mother is 60 years older than her child " + (childM.name) )
                 
             if fam.husb != None:
                 father = gc.individuals[fam.husb]
@@ -383,7 +369,7 @@ def parrTooOld(gc):
                     if calcAge(fatherBirt, childBirt) > 80:
                         removedChildren.append(childId)
                         success = 0
-                        print("US12 Error with family     ", famid, ": Father is 80 years older than his child " + (childH.name) )
+                        print("US12 Error with family     ", famid, "(line "+str(father.birtLine), str(childM.birtLine)+"): Father is 80 years older than his child " + (childH.name) )
  
         
         
@@ -415,11 +401,8 @@ def siblingSpace(gc):
                     childOtherBirt = makeDate(childOther.birt)
                     if getDifference(childOneBirt, childOtherBirt)<242 and getDifference(childOneBirt, childOtherBirt)>0:
                         success = 0
-                        print("US13 Error with family     ", famid, ": Child birth space not valid, child ID:", s[i], s[j])
-    
-    #for childID in removedChildren:
-        #fam.chil.discard(childID)
-        #gc.individuals[childID].famc = None
+                        print("US13 Error with family     ", famid, "(line "+str(gc.individuals[s[i]].birtLine), str(gc.individuals[s[j]].birtLine)+"): Child birth space not valid, child ID:", s[i], s[j])
+
     if success == 0:
         return 0
     else:
@@ -430,7 +413,7 @@ def siblingsFewerThan15(gc):
     success = -1
     for id, fam in gc.families.items():
         if(len(fam.chil) > 15):
-            print("US14 Error with family     ", id, ": This family has more than 15 children")
+            print("US14 Error with family     ", id, "(line " + str(fam.chilLine) + "): This family has more than 15 children")
             success = 0
     if success == 0:
         return 0
@@ -453,7 +436,7 @@ def multiBirthLessThan5(gc):
             if number>max:
                 max = number
         if max>5:
-            print("US15 Error with family     ", famID, ": More than five siblings born at the same time")
+            print("US15 Error with family     ", famID, "(line " + str(fam.chilLine) + "): More than five siblings born at the same time")
             success = 0
 
     if success == 0:
@@ -479,15 +462,15 @@ def maleLastNames(gc):
                     if lastName != child.name.split(' ')[-1]:
                         success = 0
                         if error == 0:
-                            print("US16 Error with family     ", id, ": At least one male has a different last name")
+                            print("US16 Error with family     ", id, "(line " + str(gc.individuals[fam.husb].nameLine), str(gc.individuals[childID].nameLine) + "): At least one male has a different last name")
                             error = 1
 
     if success == 0:
         return 0
     else:
         return 1
-    
-    
+
+
 # US17
 def NoMarriagesToDescendants(gc):
     success = -1
@@ -510,7 +493,7 @@ def NoMarriagesToDescendants(gc):
                             wifefam=set()
                             wifefam.add(fam_b.wife)
                             if(wifefam & childrengroup != set()):
-                                print("US17 Error with family     ", id, ": Parents marry their descendants")
+                                print("US17 Error with family     ", id, "(line " + str(fam.idLine) + "): Parents marry their descendants")
                                 success = 0                                
     for id, fam in gc.families.items():
         childrengroup=set()
@@ -529,7 +512,7 @@ def NoMarriagesToDescendants(gc):
                             husbfam=set()
                             husbfam.add(fam_b.husb)
                             if(husbfam & childrengroup != set()):
-                                print("US17 Error with family     ", id, ": Parents marry their descendants")
+                                print("US17 Error with family     ", id, "(line " + str(fam.idLine) + "): Parents marry their descendants")
                                 success = 0                                
     if success == 0:
         return 0
@@ -556,7 +539,7 @@ def SiblingsShouldNotMarry(gc):
                                     famset.add(family.husb)
                                     famset.add(family.wife)
                                     if famset & chilset != set():
-                                        print("US18 Error with family     ", id, ": Siblings marry one another")
+                                        print("US18 Error with family     ", id, "(line " + str(fam.idLine) + "): Siblings marry one another")
                                         success = 0
                     i += 1
 
@@ -605,7 +588,7 @@ def FirstCousinsShouldNotMarry(gc):
                                     fam_thirdset.add(family_third.wife)
                                     fam_thirdset.remove(chil_secondID)
                                     if fam_thirdset & allthird != set():
-                                        print("US19 Error with family     ", id, ": First cousins should not marry one another")
+                                        print("US19 Error with family     ", id, "(line " + str(gc.families[id].idLine) + "): First cousins should not marry one another")
                                         success = 0    
                         j +=1 
                     i += 1        
@@ -643,7 +626,7 @@ def AuntsAndUnclesNotMarryNiecesNephews(gc):
                                     fam_thirdset.add(family_third.wife)
                                     fam_thirdset.remove(chil_secondID)
                                     if fam_thirdset & chil_firstset != set():
-                                        print("US20 Error with family     ", id, ": Aunts and uncles should not marry their nieces or nephews")
+                                        print("US20 Error with family     ", id, "(line " + str(family_third.idLine) + "): Aunts and uncles should not marry their nieces or nephews")
                                         success = 0
                         j += 1
                     i += 1    
@@ -660,13 +643,13 @@ def roleGender(gc):
         if fam.husb != None:
             husband = gc.individuals[fam.husb]
             if husband.sex != "M":
-                print("US21 Error with family     ", id, ": Husband " + fam.husb + " is not male")
+                print("US21 Error with family     ", id, "(line " + str(fam.husbLine) + "): Husband " + fam.husb + " is not male")
                 success = 0
 
         if fam.wife != None:
             wife = gc.individuals[fam.wife]
             if wife.sex != "F":
-                print("US21 Error with family     ", id, ": Wife " + fam.wife + " is not female")
+                print("US21 Error with family     ", id, "(line " + str(fam.wifeLine) + "): Wife " + fam.wife + " is not female")
                 success = 0
 
     if success == 0:
@@ -683,12 +666,20 @@ def uniqueNameBirth(gc):
             if id != indiID and indiID > id:
                 if indi.name == individual.name and indi.birt == individual.birt:
                     success = 0
-                    print("US23 Error with individuals ", id," and ", indiID,": Individuals cannot share a name and birth date")
+                    print("US23 Error with individual ", id,"and", indiID,"(line "+str(indi.nameLine),str(indi.birtLine),str(individual.nameLine),str(individual.birtLine)+"): Individuals cannot share a name and birth date")
     
     if success == 0:
         return 0
     else:
-        return 1    
+        return 1
+
+# print US22
+
+def print_US22(gc):
+    for x in gc.duplicateIndi:
+        print(x)
+    for x in gc.duplicateFam:
+        print(x)
 
 # US24
 def uniFamBySpouse(gc):
@@ -708,7 +699,7 @@ def uniFamBySpouse(gc):
                     if famID1 != famID2:
                         if husb1 == husb2 and wife1 == wife2 and marr1 == marr2:
                             invalid = 0
-                            print("US24 Error with family     ", id1, "and", id2, "has the same husband, same wife and same marriage date")
+                            print("US24 Error with family     ",id1, "and", id2,"(line "+str(fam1.idLine),str(fam2.idLine)+"): has the same husband, same wife and same marriage date")
     if invalid == 0:
         return 0
     else:
@@ -725,7 +716,7 @@ def uniFirstNameFam(gc):
             for i in range(len(chil) - 1):
                 for j in range(i + 1, len(chil)):
                     if gc.individuals[chil[i]].birt == gc.individuals[chil[j]].birt and gc.individuals[chil[i]].name == gc.individuals[chil[j]].name:
-                        print("US25 Error with family     ", ID, "has children with same name and same birthday.")
+                        print("US25 Error with family     ",ID,"(line "+str(gc.individuals[chil[i]].idLine),str(gc.individuals[chil[i]].idLine)+"): has children with same name and same birthday.")
                         invalid = 0
     #for famID, fam in gc.families.items():
         #if fam.chil != None and len(fam.chil) != 0:
@@ -742,13 +733,6 @@ def uniFirstNameFam(gc):
     else:
         return 1
 
-# print US22
-def print_US22(gc):
-    for x in gc.duplicateIndi:
-        print(x)
-    for x in gc.duplicateFam:
-        print(x)
-
 # US26
 def correspondingEntries(gc):
     success = -1
@@ -764,7 +748,7 @@ def correspondingEntries(gc):
                     if coEntry == 0:
                         success = 0
                         print("US26 Error with family     ", indiID,
-                              " Don't have corresponding child record in family ", famID)
+                              "(line "+str(fam.chilLine)+"):Don't have corresponding child record in family ", famID)
         if len(indi.fams) != 0:
         # test existence of sponser record in family
             for sponserID in indi.fams:
@@ -772,7 +756,7 @@ def correspondingEntries(gc):
                     if famID == sponserID:
                         if fam.wife != indiID and fam.husb != indiID:
                             success = 0
-                            print("US26 Error with family     ", indiID, " Don't have corresponding sponser record in family ",famID)
+                            print("US26 Error with family     ", indiID, "(line "+str(fam.wifeLine), str(fam.husbLine)+"):Don't have corresponding sponser record in family ",famID)
 
     for famID, fam in gc.families.items():
         if fam.wife != None:
@@ -785,7 +769,7 @@ def correspondingEntries(gc):
                             coEntry = 1
                     if coEntry == 0:
                         success = 0
-                        print("US26 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
+                        print("US26 Error with individual ", famID, "(line "+str(fam.wifeLine)+"):Don't have corresponding wife record in individual ",indiID)
         if fam.husb != None:
         # test existence of husb record in individual
             for indiID, indi in gc.individuals.items():
@@ -796,7 +780,7 @@ def correspondingEntries(gc):
                             coEntry = 1
                     if coEntry == 0:
                         success = 0
-                        print("US26 Error with individual:", famID, " Don't have corresponding wife record in individual ",indiID)
+                        print("US26 Error with individual ", famID, "(line "+str(fam.husbLine)+"):Don't have corresponding wife record in individual ",indiID)
         if len(fam.chil)!=0:
         # test existence of child record in individual
             for chilID in fam.chil:
@@ -804,7 +788,7 @@ def correspondingEntries(gc):
                     if indiID == chilID:
                         if indi.famc == None:
                             success = 0
-                            print("US26 Error with individual:", famID, " Don't have corresponding child record in individual ", indiID)
+                            print("US26 Error with individual ", famID, "(line "+str(fam.chilLine)+"):Don't have corresponding child record in individual ", indiID)
     if success == 0:
         return 0
     else:

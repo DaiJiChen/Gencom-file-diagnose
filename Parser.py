@@ -65,6 +65,7 @@ def getDifference(dt1, dt2= date.today()):
     #n2 += countLeapYears(dt2)
     return (n2 - n1)
 
+
 class Gedcom:
     def __init__(self, filename):
         self.US28 = 1
@@ -88,10 +89,11 @@ class Gedcom:
         lines = open(filename, 'r')
         indi = ""
         fam = ""
-        plevel = ""  # DATE will use the previous line.
         ptag = ""
         flag = 0
+        i = 0
         for x in lines:
+            i += 1
             #Extract information from inputline: <level> <tag> <args>
             x = x.strip('\n')
             x = x.strip()
@@ -115,18 +117,20 @@ class Gedcom:
                     if indi not in self.existedIndi:
                         self.existedIndi[indi] = 1
                         self.individuals[indi] = Individual()
+                        self.individuals[indi].idLine = i
                     else:
                         flag = 3
-                        self.duplicateIndi.append("US22 Error with individual  " + str(indi) + " : " + "duplicate ID")
+                        self.duplicateIndi.append("US22 Error with individual  " + str(indi) + " (line "+ str(i)+"): " + "duplicate ID")
                 if tag == "FAM":
                     flag = 2
                     fam = args.replace("@", "")
                     if fam not in self.existedFam:
                         self.existedFam[fam] = 1
                         self.families[fam] = Family()
+                        self.families[fam].idLine = i
                     else:
                         flag = 3
-                        self.duplicateFam.append("US22 Error with family  " + str(fam) + " : " + "duplicate ID")
+                        self.duplicateFam.append("US22 Error with family  " + str(fam) + " (line "+ str(i)+"): " + "duplicate ID")
 
             elif flag in [1, 2]:
                 if args != "":
@@ -136,32 +140,43 @@ class Gedcom:
                         if flag == 1:
                             if tag == "NAME":
                                 self.individuals[indi].name = args
+                                self.individuals[indi].nameLine = i
                             elif tag == "SEX":
                                 self.individuals[indi].sex = args
+                                self.individuals[indi].sexLine = i
                             elif tag == "FAMC":
                                 self.individuals[indi].famc = args
+                                self.individuals[indi].famcLine = i
                             elif tag == "FAMS":
                                 self.individuals[indi].fams.add(args)
+                                self.individuals[indi].famsLine = i
                         elif flag == 2:
                             if tag == "HUSB":
                                 self.families[fam].husb = args
+                                self.families[fam].husbLine = i
                             elif tag == "WIFE":
                                 self.families[fam].wife = args
+                                self.families[fam].wifeLine = i
                             elif tag == "CHIL":
                                 self.families[fam].chil.add(args)
+                                self.families[fam].chilLine = i
 
                     elif level == "2" and tag == "DATE":
                         if flag == 1:
                             if ptag == "BIRT":
                                 self.individuals[indi].birt = args
+                                self.individuals[indi].birtLine = i
                             elif ptag == "DEAT":
                                 self.individuals[indi].deat = args
+                                self.individuals[indi].deatLine = i
                         elif flag == 2:
                             if ptag == "MARR":
                                 self.families[fam].marr = args
+                                self.families[fam].marrLine = i
                             elif ptag == "DIV":
                                 self.families[fam].div = args
-            plevel = level
+                                self.families[fam].divLine = i
+
             ptag = tag
         self.illDate() # US41
         for indi in self.individuals.values():
@@ -239,7 +254,6 @@ class Gedcom:
         if haveAnniversary == 0:
             print("There are no upcoming anniversaries for living couples.")
 
-
     def displayOutput(self,flags):
         if not flags:
             self.print_table()
@@ -258,7 +272,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US42.append("US42 Error with individual  "+ str(id)+ ": Birthday "+ str(indi.birt)+ " is illegitimate")
+                    self.US42.append("US42 Error with individual  "+ str(id)+ " (line "+ str(indi.birtLine) + "): Birthday "+ str(indi.birt)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 indi.birt = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -267,7 +281,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US42.append("US42 Error with individual   " + str(id) + ": death date "+ str(indi.deat)+ " is illegitimate")
+                    self.US42.append("US42 Error with individual   " + str(id)+ " (line "+ str(indi.deatLine) + "): death date "+ str(indi.deat)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 indi.deat = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -277,7 +291,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US42.append("US42 Error with family      "+ str(id)+ ": divorce date " + str(fam.div)+ " is illegitimate")
+                    self.US42.append("US42 Error with family      "+ str(id)+ " (line "+ str(fam.divLine) + "): divorce date " + str(fam.div)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.div = temp[0] + " " + temp[1] + " " + temp[2]
 
@@ -286,7 +300,7 @@ class Gedcom:
                 day = int(temp[0])
                 month = months[temp[1]]
                 if day > days[month]:
-                    self.US42.append("US42 Error with family      " + str(id)+ ": marriage date "+ str(fam.marr)+ " is illegitimate")
+                    self.US42.append("US42 Error with family      " + str(id)+ " (line "+ str(fam.marrLine) + "): marriage date "+ str(fam.marr)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.marr = temp[0] + " " + temp[1] + " " + temp[2]
                 
@@ -323,6 +337,13 @@ class Family:
         self.wife = None
         self.chil = set()
 
+        self.idLine = None
+        self.marrLine = None
+        self.divLine = None
+        self.husbLine = None
+        self.wifeLine = None
+        self.chilLine = None
+
 
 class Individual:
     def __init__(self):
@@ -334,6 +355,14 @@ class Individual:
         self.deat = None
         self.famc = None
         self.fams = set()
+
+        self.idLine = None
+        self.nameLine = None
+        self.sexLine = None
+        self.birtLine = None
+        self.deatLine = None
+        self.famcLine = None
+        self.famsLine = None
 
     def calcuAge(self):
         if self.deat == None:
@@ -352,6 +381,7 @@ def main(filename, flags):
     gc.displayOutput(flags)
     print("\n\n\n========================= Error informations ==========================\n")
     validate.validate(gc)
+    return 0
 
 
 if __name__ == "__main__" :
