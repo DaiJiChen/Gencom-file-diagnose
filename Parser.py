@@ -304,6 +304,40 @@ class Gedcom:
                     temp[0] = str(days[months[temp[1]]])
                 fam.marr = temp[0] + " " + temp[1] + " " + temp[2]
                 
+    # US33    List orphans    List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
+    def listOrphans(self):
+        orphanChildren = []
+        for famid, fam in self.families.items():
+            if fam.chil != None:
+                children = fam.chil
+                #do nested for loop with variable i, j+1
+                husband = self.individuals[fam.husb]
+                wife = self.individuals[fam.wife]
+                if husband.alive == False and wife.alive == False:
+                    for childId in children:
+                        child = self.individuals[childId]
+                        childBirt = makeDate(child.birt)
+                        childAge = calcAge(childBirt)
+                        if childAge < 18:
+                            orphanChildren.append(child.name)
+                            
+        print("Orphaned children: " + str(orphanChildren))
+        
+        
+    # US34   List large age differences    List all couples who were married when the older spouse was more than twice as 
+    # old as the younger spouse
+    def spouseMuchOlder(self):
+        for famid, fam in self.families.items():
+            if fam.marr != None:
+                husband = self.individuals[fam.husb]
+                husbAgeMarr = calcAge(makeDate(husband.birt), makeDate(fam.marr))
+                wife = self.individuals[fam.wife]
+                wifeAgeMarr = calcAge(makeDate(wife.birt), makeDate(fam.marr))
+                if wifeAgeMarr * 2 < husbAgeMarr:
+                    print("Husband more than twice as old as wife when married in family ", famid)
+                if husbAgeMarr * 2 < wifeAgeMarr:
+                    print("Wife more than twice as old as husband when married in family ", famid)            
+                
                 
     #US29 List deceased
     #def deceasedIndividuals(self):
