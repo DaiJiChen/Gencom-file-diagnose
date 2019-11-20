@@ -365,11 +365,11 @@ class Gedcom:
                     print(*livingChildren, sep = ", ")
                     recentSurvivors = 1
                 elif len(livingSpouses) != 0:
-                    print("Individual " + id + " was survived by spouse(s): ")
+                    print("Individual " + id + " was survived by spouse(s): ", end = "")
                     print(*livingSpouses, sep = ", ")
                     recentSurvivors = 1
                 elif len(livingChildren) != 0:
-                    print("Individual " + id + " was survived by child(ren): ")
+                    print("Individual " + id + " was survived by child(ren): ", end = "")
                     print(*livingChildren, sep = ", ")
                     recentSurvivors = 1
         if recentSurvivors == 0:
