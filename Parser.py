@@ -241,7 +241,41 @@ class Gedcom:
                         married = 1
                 if married == 1:
                     print("Individual", indiID, "is alive and is not married")
+    
+    # US31: list all living people over 30 who have never been married outside the prettytable
+    def list_livingSingle(self):
+        print("\nUS31 ---------------- list all living single people ----------------")
+        for indiID, indi in self.individuals.items():
+            if(indi.deat == None):
+                if(calcAge(makeDate(indi.birt))>30):
+                    single = 0
+                    for famID, fam in self.families.items():
+                        if fam.husb != indiID and fam.wife != indiID:
+                            single = 1
+                    if single == 1:
+                        print("Individual", indiID, "is alive and is single")
 
+    # US32: List all multiple births outside the prettytable
+    def list_multiple(self):
+        print("\nUS32 ---------------- List all multiple births ----------------")
+        mulset = set()
+        for indiID, indi_1 in self.individuals.items():
+            ibirt = indi_1.birt
+            ifamc = indi_1.famc
+            mul = indiID
+            count = 0
+            tempset=set()
+            tempset.add(indiID)
+            if(mulset&tempset==set()):
+                mulset.add(indiID)
+                for ID, indi_2 in self.individuals.items():
+                    if (indi_2.birt==ibirt and indi_2.famc==ifamc):
+                        mul=mul+","+ID
+                        mulset.add(ID)
+                        count+=1
+                if (count>0):
+                    print("Multiple births:",str(mul))
+    
     # US33    List orphans    List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
     def listOrphans(self):
         print("\nUS33 ---------------- list orphans ----------------")
