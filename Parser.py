@@ -242,6 +242,54 @@ class Gedcom:
                 if married == 0:
                     print("Individual", indiID, "is alive and is not married")
 
+    # US33    List orphans    List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
+    def listOrphans(self):
+        print("\nUS33 ---------------- list orphans ----------------")
+        orphanChildren = []
+        for famid, fam in self.families.items():
+            if fam.chil != None:
+                children = fam.chil
+                # do nested for loop with variable i, j+1
+                if fam.husb != None and fam.wife != None and self.individuals[fam.husb]!= None and self.individuals[fam.wife]!= None:
+                    husband = self.individuals[fam.husb]
+                    wife = self.individuals[fam.wife]
+                    if husband.alive == False and wife.alive == False:
+                        for childId in children:
+                            child = self.individuals[childId]
+                            childBirt = makeDate(child.birt)
+                            childAge = calcAge(childBirt)
+                            if childAge < 18:
+                                orphanChildren.append(child.name)
+
+        if len(orphanChildren) == 0:
+            print("    There is no orphan in this GEDCOM file")
+        else:
+            print("Orphaned children: " + str(orphanChildren))
+
+
+    # US34   List large age differences    List all couples who were married when the older spouse was more than twice as
+    # old as the younger spouse
+    def spouseMuchOlder(self):
+        print("\nUS34 ---------- list large age difference ----------")
+        numberOfLargeDiff = 0
+        for famid, fam in self.families.items():
+            if fam.marr != None and fam.husb != None and fam.wife != None and self.individuals[fam.husb]!= None and self.individuals[fam.wife] != None:
+                husband = self.individuals[fam.husb]
+                husbAgeMarr = calcAge(makeDate(husband.birt), makeDate(fam.marr))
+                wife = self.individuals[fam.wife]
+                wifeAgeMarr = calcAge(makeDate(wife.birt), makeDate(fam.marr))
+                if wifeAgeMarr * 2 < husbAgeMarr:
+                    print("Husband more than twice as old as wife when married in family ", famid)
+                    numberOfLargeDiff+=1
+                if husbAgeMarr * 2 < wifeAgeMarr:
+                    print("Wife more than twice as old as husband when married in family ", famid)
+                    numberOfLargeDiff+=1
+        if numberOfLargeDiff == 0:
+            print("    There is no large age difference between couples     ")
+
+
+
+
     # US39: List all living couples whose marriage anniversaries occur in the next 30 days
     def list_upcoming_anniversaries(self):
         print("\nUS39 ---------------- List upcoming anniversaries ----------------")
@@ -261,6 +309,8 @@ class Gedcom:
             if flag == "print": self.print_table()
             if flag == "US29": self.list_deceased()
             if flag == "US30": self.list_livingMarriage()
+            if flag == "US33": self.listOrphans()
+            if flag == "US34": self.spouseMuchOlder()
             if flag == "US39": self.list_upcoming_anniversaries()
 
         return 1
@@ -303,40 +353,6 @@ class Gedcom:
                     self.US42.append("US42 Error with family      " + str(id)+ " (line "+ str(fam.marrLine) + "): marriage date "+ str(fam.marr)+ " is illegitimate")
                     temp[0] = str(days[months[temp[1]]])
                 fam.marr = temp[0] + " " + temp[1] + " " + temp[2]
-                
-    # US33    List orphans    List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
-    def listOrphans(self):
-        orphanChildren = []
-        for famid, fam in self.families.items():
-            if fam.chil != None:
-                children = fam.chil
-                #do nested for loop with variable i, j+1
-                husband = self.individuals[fam.husb]
-                wife = self.individuals[fam.wife]
-                if husband.alive == False and wife.alive == False:
-                    for childId in children:
-                        child = self.individuals[childId]
-                        childBirt = makeDate(child.birt)
-                        childAge = calcAge(childBirt)
-                        if childAge < 18:
-                            orphanChildren.append(child.name)
-                            
-        print("Orphaned children: " + str(orphanChildren))
-        
-        
-    # US34   List large age differences    List all couples who were married when the older spouse was more than twice as 
-    # old as the younger spouse
-    def spouseMuchOlder(self):
-        for famid, fam in self.families.items():
-            if fam.marr != None:
-                husband = self.individuals[fam.husb]
-                husbAgeMarr = calcAge(makeDate(husband.birt), makeDate(fam.marr))
-                wife = self.individuals[fam.wife]
-                wifeAgeMarr = calcAge(makeDate(wife.birt), makeDate(fam.marr))
-                if wifeAgeMarr * 2 < husbAgeMarr:
-                    print("Husband more than twice as old as wife when married in family ", famid)
-                if husbAgeMarr * 2 < wifeAgeMarr:
-                    print("Wife more than twice as old as husband when married in family ", famid)            
                 
                 
     #US29 List deceased
