@@ -65,6 +65,16 @@ def getDifference(dt1, dt2= date.today()):
     #n2 += countLeapYears(dt2)
     return (n2 - n1)
 
+# Returns true if yearly occurance of the day and month of d1 occurs within 30 days 
+def occursWithinThirty(d1):
+    today = date.today()
+    if today.month == d1.month and d1.day >= today.day:
+        return True
+    elif today.month+1 == d1.month and days[today.month] - today.day + d1.day <= 30:
+        return True
+    else:
+        return False
+
 
 class Gedcom:
     def __init__(self, filename):
@@ -322,6 +332,61 @@ class Gedcom:
             print("    There is no large age difference between couples     ")
 
 
+    # US37: List all living spouses and descendants of people who died in the last 30 days
+    def list_recent_survivors(self):
+        print("\nUS37 ---------------- List recent survivors ----------------")
+        recentSurvivors = 0
+        for id, indi in self.individuals.items():
+            if not indi.alive and getDifference(date.today(),makeDate(indi.deat)) < 30:
+                livingSpouses = []
+                for famID in indi.fams:
+                    fam = self.families[famID]
+                    if indi.sex == "M":
+                        if fam.wife != None:
+                            spouse = self.individuals[fam.wife]
+                            if spouse.alive:
+                                livingSpouses.append(fam.wife)
+                    else:
+                        if fam.husb != None:
+                            spouse = self.individuals[fam.husb]
+                            if spouse.alive:
+                                livingSpouses.append(fam.husb)
+                livingChildren = []
+                for famID in indi.fams:
+                    fam = self.families[famID]
+                    for childID in fam.chil:
+                        child = self.individuals[childID]
+                        if child.alive:
+                            livingChildren.append(childID)
+                if len(livingSpouses) != 0 and len(livingChildren) != 0:
+                    print("Individual " + id + " was survived by spouse(s):", end = " " )
+                    print(*livingSpouses, sep = ", ", end = ", ")
+                    print("and child(ren):", end = " ")
+                    print(*livingChildren, sep = ", ")
+                    recentSurvivors = 1
+                elif len(livingSpouses) != 0:
+                    print("Individual " + id + " was survived by spouse(s): ")
+                    print(*livingSpouses, sep = ", ")
+                    recentSurvivors = 1
+                elif len(livingChildren) != 0:
+                    print("Individual " + id + " was survived by child(ren): ")
+                    print(*livingChildren, sep = ", ")
+                    recentSurvivors = 1
+        if recentSurvivors == 0:
+            print("There are no survivors of the recently dead.")
+        return recentSurvivors
+
+    # US38: List all living people whose birthdays occur in the next 30 days
+    def list_upcoming_birthdays(self):
+        print("\nUS38 ---------------- List upcoming birthdays ----------------")
+        haveBirthdays = 0
+        for id, indi in self.individuals.items():
+            if indi.alive and occursWithinThirty(makeDate(indi.birt)):
+                print("The birthday of " + id + " is soon.")
+                haveBirthdays = 1
+        if haveBirthdays == 0:
+            print("There are no upcoming birthdays for living people.")
+        return haveBirthdays
 
 
     # US39: List all living couples whose marriage anniversaries occur in the next 30 days
@@ -345,6 +410,8 @@ class Gedcom:
             if flag == "US30": self.list_livingMarriage()
             if flag == "US33": self.listOrphans()
             if flag == "US34": self.spouseMuchOlder()
+            if flag == "US37": self.list_recent_survivors()
+            if flag == "US38": self.list_upcoming_birthdays()
             if flag == "US39": self.list_upcoming_anniversaries()
 
         return 1
