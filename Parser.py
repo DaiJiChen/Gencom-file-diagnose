@@ -223,14 +223,14 @@ class Gedcom:
                             self.US28 = 0
 
 
-    # US29: list all deceased individuals outside the prettytable
+    # US29: list all deceased individuals
     def list_deceased(self):
         print("\nUS29 ---------------- list all deceased individuals -----------------")
         for indiID, indi in self.individuals.items():
             if indi.deat != None:
                 print("Individual " + indiID + "(" + indi.name + ") : Died in", indi.deat, "at the age of", str(indi.age) + ".")
 
-    # US30: list all living married people outside the prettytable
+    # US30: list all living married people
     def list_livingMarriage(self):
         print("\nUS30 ---------------- list all living married people ----------------")
         for indiID, indi in self.individuals.items():
@@ -239,7 +239,7 @@ class Gedcom:
                 for famID, fam in self.families.items():
                     if fam.husb == indiID or fam.wife == indiID:
                         married = 1
-                if married == 0:
+                if married == 1:
                     print("Individual", indiID, "is alive and is not married")
 
     # US33    List orphans    List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
