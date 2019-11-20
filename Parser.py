@@ -250,7 +250,7 @@ class Gedcom:
                     if fam.husb == indiID or fam.wife == indiID:
                         married = 1
                 if married == 1:
-                    print("Individual", indiID, "is alive and is not married")
+                    print("Individual", indiID, "is alive and is married")
     
     # US31: list all living people over 30 who have never been married outside the prettytable
     def list_livingSingle(self):
@@ -258,31 +258,33 @@ class Gedcom:
         for indiID, indi in self.individuals.items():
             if(indi.deat == None):
                 if(calcAge(makeDate(indi.birt))>30):
-                    single = 0
+                    single = 1
                     for famID, fam in self.families.items():
-                        if fam.husb != indiID and fam.wife != indiID:
-                            single = 1
+                        if fam.husb == indiID or fam.wife == indiID:
+                            single = 0
                     if single == 1:
                         print("Individual", indiID, "is alive and is single")
 
     # US32: List all multiple births outside the prettytable
-    def list_multiple(self):
+    def list_multipleBirths(self):
         print("\nUS32 ---------------- List all multiple births ----------------")
         mulset = set()
         for indiID, indi_1 in self.individuals.items():
-            ibirt = indi_1.birt
-            ifamc = indi_1.famc
-            mul = indiID
-            count = 0
-            tempset=set()
-            tempset.add(indiID)
-            if(mulset&tempset==set()):
-                mulset.add(indiID)
-                for ID, indi_2 in self.individuals.items():
-                    if (indi_2.birt==ibirt and indi_2.famc==ifamc):
-                        mul=mul+","+ID
-                        mulset.add(ID)
-                        count+=1
+            if indi_1.famc != None:
+                ibirt = indi_1.birt
+                ifamc = indi_1.famc
+                mul = indiID
+                count = 0
+                tempset=set()
+                tempset.add(indiID)
+                if(mulset&tempset==set()):
+                    mulset.add(indiID)
+                    for ID, indi_2 in self.individuals.items():
+                        if (ID != indiID):
+                            if (indi_2.birt==ibirt and indi_2.famc==ifamc):
+                                mul=mul+","+ID
+                                mulset.add(ID)
+                                count+=1
                 if (count>0):
                     print("Multiple births:",str(mul))
     
@@ -408,6 +410,8 @@ class Gedcom:
             if flag == "print": self.print_table()
             if flag == "US29": self.list_deceased()
             if flag == "US30": self.list_livingMarriage()
+            if flag == "US31": self.list_livingSingle()
+            if flag == "US32": self.list_multipleBirths()    
             if flag == "US33": self.listOrphans()
             if flag == "US34": self.spouseMuchOlder()
             if flag == "US37": self.list_recent_survivors()
