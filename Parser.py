@@ -269,6 +269,7 @@ class Gedcom:
     def list_multipleBirths(self):
         print("\nUS32 ---------------- List all multiple births ----------------")
         mulset = set()
+        noMultiBirth = 1
         for indiID, indi_1 in self.individuals.items():
             if indi_1.famc != None:
                 ibirt = indi_1.birt
@@ -286,7 +287,10 @@ class Gedcom:
                                 mulset.add(ID)
                                 count+=1
                 if (count>0):
+                    noMultiBirth = 0
                     print("Multiple births:",str(mul))
+        if noMultiBirth == 1:
+            print("There is no multiple births")
     
     # US33    List orphans    List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
     def listOrphans(self):
@@ -308,7 +312,7 @@ class Gedcom:
                                 orphanChildren.append(child.name)
 
         if len(orphanChildren) == 0:
-            print("    There is no orphan in this GEDCOM file")
+            print("There is no orphan in this GEDCOM file")
         else:
             print("Orphaned children: " + str(orphanChildren))
 
@@ -331,7 +335,7 @@ class Gedcom:
                     print("Wife more than twice as old as husband when married in family ", famid)
                     numberOfLargeDiff+=1
         if numberOfLargeDiff == 0:
-            print("    There is no large age difference between couples     ")
+            print("There is no large age difference between couples")
 
 
     # US37: List all living spouses and descendants of people who died in the last 30 days
@@ -384,12 +388,42 @@ class Gedcom:
         haveBirthdays = 0
         for id, indi in self.individuals.items():
             if indi.alive and occursWithinThirty(makeDate(indi.birt)):
-                print("The birthday of " + id + " is soon.")
+                print("The birthday of " + id + " is comming soon.")
                 haveBirthdays = 1
         if haveBirthdays == 0:
             print("There are no upcoming birthdays for living people.")
         return haveBirthdays
 
+    # US35 List all people who were born within the last 30 days
+    def bornLast30Days(self):
+        print("\nUS35 ---------------- List recent births ----------------")
+        indiBornLast30Days = []
+        for id, indi in self.individuals.items():
+            if indi.birt != None:
+                birthday = makeDate(indi.birt)
+                if getDifference(birthday, date.today()) >= 0 and getDifference(birthday, date.today()) <= 29:
+                    indiBornLast30Days.append(id)
+
+        if len(indiBornLast30Days) == 0:
+            print("There are no individuals born within the last 30 days")
+        else:
+            print("Individuals born within the last 30 days are:", str(indiBornLast30Days))
+
+
+    # US36 List all people who died within the last 30 days
+    def dieLast30Days(self):
+        print("\nUS36 ---------------- List recent deaths ----------------")
+        indiDieLast30Days = []
+        for id, indi in self.individuals.items():
+            if indi.deat != None:
+                deathday = makeDate(indi.deat)
+                if getDifference(deathday, date.today()) >= 0 and getDifference(deathday, date.today()) <= 29:
+                    indiDieLast30Days.append(id)
+
+        if len(indiDieLast30Days) == 0:
+            print("There are no individuals died within the last 30 days")
+        else:
+            print("Individuals die within the last 30 days are:", str(indiDieLast30Days))
 
     # US39: List all living couples whose marriage anniversaries occur in the next 30 days
     def list_upcoming_anniversaries(self):
@@ -414,9 +448,25 @@ class Gedcom:
             if flag == "US32": self.list_multipleBirths()    
             if flag == "US33": self.listOrphans()
             if flag == "US34": self.spouseMuchOlder()
+            if flag == "US35": self.bornLast30Days()
+            if flag == "US36": self.dieLast30Days()
             if flag == "US37": self.list_recent_survivors()
             if flag == "US38": self.list_upcoming_birthdays()
             if flag == "US39": self.list_upcoming_anniversaries()
+            # if flag == all, then print all informations
+            if flag == "all" :
+                self.print_table()
+                self.list_deceased()
+                self.list_livingMarriage()
+                self.list_livingSingle()
+                self.list_multipleBirths()
+                self.listOrphans()
+                self.spouseMuchOlder()
+                self.bornLast30Days()
+                self.dieLast30Days()
+                self.list_recent_survivors()
+                self.list_upcoming_birthdays()
+                self.list_upcoming_anniversaries()
 
         return 1
           
