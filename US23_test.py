@@ -4,13 +4,13 @@ import validate
 
 class TestUS16(unittest.TestCase):
     # A successful case
-    def test_US16(self):
+    def pass_US23(self):
         gc = Parser.Gedcom("gedcomfile.ged")
-        self.assertEqual(validate.roleGender(gc), 1)
+        self.assertEqual(validate.uniqueNameBirth(gc), 1)
     # A failure case
-    def test_US16(self):
+    def fail_US23(self):
         gc = Parser.Gedcom("bad_gedcomfile.ged")
-        self.assertEqual(validate.roleGender(gc), 0)
+        self.assertEqual(validate.uniqueNameBirth(gc), 0)
 
 
 unittest.main()

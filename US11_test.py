@@ -2,15 +2,15 @@ import unittest
 import Parser
 import validate
 
-class TestUS08(unittest.TestCase):
+class TestUS11(unittest.TestCase):
     # A successful case
-    def test1(self):
+    def test_US12(self):
         gc = Parser.Gedcom("gedcomfile.ged")
-        self.assertEqual(validate.birthB4ParentMarr(gc), 1)
+        self.assertEqual(validate.noBigamy(gc), 1)
     # A failure case
-    def test2(self):
+    def test_US12(self):
         gc = Parser.Gedcom("bad_gedcomfile.ged")
-        self.assertEqual(validate.birthB4ParentMarr(gc), 0)
+        self.assertEqual(validate.noBigamy(gc), 0)
 
 
 unittest.main()
