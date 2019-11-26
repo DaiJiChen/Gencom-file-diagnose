@@ -381,8 +381,10 @@ def parrTooOld(gc):
     else:
         return 1
             
-# US13 Siblings spacing    Birth dates of siblings should be more than 8 months apart or less than 2 days 
-# apart (twins may be born one day apart, e.g. 11:59 PM and 12:02 AM the following calendar day)
+# US13
+# Any two siblings are either twins or non-twins
+# For twins their birthdays should be at most 1 day apart
+# For non-twins their birthdays should be at least 8 months (242 days) apart
 def siblingSpace(gc):
     success = -1
     for famid, fam in gc.families.items():
