@@ -1,0 +1,46 @@
+language: python
+python:
+  - "3.6"
+  - "3.7"
+script:
+  python US01_test.py
+  python US02_test.py
+  python US03_test.py
+  python US04_test.py
+  python US05_test.py
+  python US06_test.py
+  python US07_test.py
+  python US08_test.py  
+  python US09_test.py
+  python US10_test.py
+  python US11_test.py
+  python US12_test.py
+  python US13_test.py
+  python US14_test.py
+  python US15_test.py
+  python US16_test.py
+  python US17_test.py
+  python US18_test.py
+  python US19_test.py
+  python US20_test.py
+  python US21_test.py
+  python US22_test.py
+  python US23_test.py
+  python US24_test.py
+  python US25_test.py
+  python US26_test.py
+  python US27_test.py
+  python US28_test.py
+  python US29_test.py
+  python US30_test.py
+  python US31_test.py
+  python US32_test.py
+  python US33_test.py
+  python US34_test.py
+  python US35_test.py
+  python US36_test.py
+  python US37_test.py
+  python US38_test.py
+  python US39_test.py
+  python US40_test.py
+  python US42_test.py
