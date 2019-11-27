@@ -1,7 +1,7 @@
 language: python
 python:
   - "3.6"
-  - "3.7.2"
+  - "3.7"
 script:
   python US01_test.py
   python US02_test.py
